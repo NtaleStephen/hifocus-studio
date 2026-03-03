@@ -7,6 +7,7 @@ import { SettingsProvider } from "@/contexts/SettingsContext";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Pricing from "./pages/Pricing";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/auth" element={<AuthRoute><Auth /></AuthRoute>} />
+              <Route path="/pricing" element={<Pricing />} />
               <Route path="/*" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             </Routes>
           </BrowserRouter>
