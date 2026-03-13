@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+model User {
+  id            String         @id
+  email         String         @unique
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  settings      Settings?
+  focusSessions FocusSession[]
+}
+
+model Settings {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  theme         String   @default("midnight")
+  is24Hour      Boolean  @default(false)
+  showSeconds   Boolean  @default(false)
+  showDate      Boolean  @default(true)
+  hourlyChime   Boolean  @default(false)
+  alertSound    String   @default("chime")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model FocusSession {
+  id            String   @id @default(uuid())
+  userId        String
+  duration      Int      // Duration in minutes
+  type          String   @default("pomodoro") // Can be pomodoro, countdown
+  completedAt   DateTime @default(now())
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

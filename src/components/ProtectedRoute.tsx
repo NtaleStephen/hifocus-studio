@@ -9,11 +9,14 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const pathname = usePathname();
 
+  const publicRoutes = ["/", "/auth", "/about"];
+  const isPublic = publicRoutes.includes(pathname);
+
   useEffect(() => {
-    if (!loading && !user && pathname !== "/auth") {
+    if (!loading && !user && !isPublic) {
       router.replace("/auth");
     }
-  }, [user, loading, router, pathname]);
+  }, [user, loading, router, isPublic]);
 
   if (loading) {
     return (
@@ -23,7 +26,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (!user && pathname !== "/auth") {
+  if (!user && !isPublic) {
     return null;
   }
 

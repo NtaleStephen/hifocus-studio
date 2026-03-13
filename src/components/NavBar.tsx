@@ -24,10 +24,10 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
   const { user, signOut } = useAuth();
 
   const links = [
-    { path: "/", icon: Clock, label: "Clock" },
-    { path: "/countdown", icon: Timer, label: "Countdown" },
-    { path: "/pomodoro", icon: Brain, label: "Pomodoro" },
-    { path: "/themes", icon: Palette, label: "Themes" },
+    { path: "/app", icon: Clock, label: "Clock" },
+    { path: "/app/countdown", icon: Timer, label: "Countdown" },
+    { path: "/app/pomodoro", icon: Brain, label: "Pomodoro" },
+    { path: "/app/themes", icon: Palette, label: "Themes" },
     { path: "/about", icon: Info, label: "About" },
   ];
 

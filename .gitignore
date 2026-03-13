@@ -26,3 +26,5 @@ dist-ssr
 # Next.js
 .next
 .env
+
+/src/generated/prisma
