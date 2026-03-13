@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import FlipCard from "./FlipCard";
 import { useSettings } from "@/contexts/SettingsContext";
@@ -5,13 +7,16 @@ import { playSound } from "@/lib/sounds";
 
 const FlipClock = () => {
   const { settings } = useSettings();
-  const [time, setTime] = useState(new Date());
+  const [time, setTime] = useState<Date | null>(null);
+  const [mounted, setMounted] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
 
   const prevMinuteRef = useRef<number | null>(null);
 
   useEffect(() => {
+    setMounted(true);
+    setTime(new Date());
     const interval = setInterval(() => {
       const now = new Date();
       setTime(now);
@@ -26,6 +31,7 @@ const FlipClock = () => {
 
   // Auto-scale to fit viewport width
   useLayoutEffect(() => {
+    if (!mounted) return;
     const calc = () => {
       if (!wrapperRef.current) return;
       const vw = window.innerWidth;
@@ -39,7 +45,11 @@ const FlipClock = () => {
     calc();
     window.addEventListener("resize", calc);
     return () => window.removeEventListener("resize", calc);
-  }, [settings.showSeconds, settings.is24Hour]);
+  }, [mounted, settings.showSeconds, settings.is24Hour]);
+
+  if (!mounted || !time) {
+    return <div className="h-64 w-full flex items-center justify-center bg-card bg-opacity-20 animate-pulse rounded-2xl" />;
+  }
 
   let hours = time.getHours();
   const minutes = time.getMinutes();

@@ -1,3 +1,4 @@
+"use client";
 import { useSettings } from "@/contexts/SettingsContext";
 import { themes } from "@/lib/themes";
 import { soundOptions, previewSound } from "@/lib/sounds";

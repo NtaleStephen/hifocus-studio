@@ -1,5 +1,7 @@
+"use client";
+
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,14 +9,14 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Lock, Eye, EyeOff, Clock } from "lucide-react";
 
-const Auth = () => {
+const AuthContent = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,12 +26,12 @@ const Auth = () => {
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        navigate("/");
+        router.push("/");
       } else {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin },
+          options: { emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : '' },
         });
         if (error) throw error;
         toast({
@@ -54,7 +56,7 @@ const Auth = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: window.location.origin,
+          redirectTo: typeof window !== 'undefined' ? window.location.origin : '',
         },
       });
       if (error) throw error;
@@ -72,7 +74,6 @@ const Auth = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm space-y-8">
-        {/* Logo */}
         <div className="flex flex-col items-center gap-2">
           <div className="flex items-center gap-2 text-primary">
             <Clock className="h-8 w-8" />
@@ -83,7 +84,6 @@ const Auth = () => {
           </p>
         </div>
 
-        {/* Google OAuth */}
         <Button
           variant="outline"
           className="w-full gap-2 h-11"
@@ -111,14 +111,12 @@ const Auth = () => {
           Continue with Google
         </Button>
 
-        {/* Divider */}
         <div className="flex items-center gap-3">
           <div className="h-px flex-1 bg-border" />
           <span className="text-xs text-muted-foreground uppercase tracking-wider">or</span>
           <div className="h-px flex-1 bg-border" />
         </div>
 
-        {/* Email form */}
         <form onSubmit={handleEmailAuth} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -129,7 +127,7 @@ const Auth = () => {
                 type="email"
                 placeholder="you@example.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                 className="pl-10"
                 required
               />
@@ -145,7 +143,7 @@ const Auth = () => {
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                 className="pl-10 pr-10"
                 required
                 minLength={6}
@@ -165,7 +163,6 @@ const Auth = () => {
           </Button>
         </form>
 
-        {/* Toggle */}
         <p className="text-center text-sm text-muted-foreground">
           {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
           <button
@@ -180,4 +177,4 @@ const Auth = () => {
   );
 };
 
-export default Auth;
+export default AuthContent;

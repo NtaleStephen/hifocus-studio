@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import type { SoundId } from "@/lib/sounds";
 
@@ -33,14 +35,18 @@ export const useSettings = () => {
 };
 
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
-  const [settings, setSettings] = useState<Settings>(() => {
+  const [settings, setSettings] = useState<Settings>(defaultSettings);
+
+  useEffect(() => {
     try {
       const stored = localStorage.getItem("hifocus-settings");
-      return stored ? { ...defaultSettings, ...JSON.parse(stored) } : defaultSettings;
-    } catch {
-      return defaultSettings;
+      if (stored) {
+        setSettings({ ...defaultSettings, ...JSON.parse(stored) });
+      }
+    } catch (e) {
+      console.warn("Failed to load settings", e);
     }
-  });
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("hifocus-settings", JSON.stringify(settings));

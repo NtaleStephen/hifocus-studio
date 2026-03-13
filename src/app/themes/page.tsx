@@ -1,8 +1,14 @@
+"use client";
+
+import { useState, useCallback } from "react";
+import NavBar from "@/components/NavBar";
+import { Footer } from "@/components/Footer";
+import SettingsPanel from "@/components/SettingsPanel";
 import { useSettings } from "@/contexts/SettingsContext";
 import { themes } from "@/lib/themes";
 import type { ThemeConfig } from "@/lib/themes";
 
-const Themes = () => {
+const ThemesContent = () => {
   const { settings, updateSettings } = useSettings();
 
   return (
@@ -44,12 +50,10 @@ const ThemeCard = ({
         active ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-muted-foreground/30"
       }`}
     >
-      {/* Mini preview */}
       <div
         className="relative mb-3 flex items-center justify-center gap-2 rounded-xl p-6 overflow-hidden"
         style={{ backgroundColor: bg }}
       >
-        {/* Digit previews */}
         {["1", "2", ":", "4", "5"].map((ch, i) =>
           ch === ":" ? (
             <div key={i} className="flex flex-col gap-1">
@@ -62,7 +66,6 @@ const ThemeCard = ({
               className="relative flex h-10 w-8 items-center justify-center rounded-md font-mono text-lg font-bold overflow-hidden"
               style={{ backgroundColor: digitBg, color: accent }}
             >
-              {/* Effect overlay in preview */}
               {theme.cardEffect === "stripes" && (
                 <div
                   className="pointer-events-none absolute inset-0 opacity-[0.12]"
@@ -84,19 +87,17 @@ const ThemeCard = ({
                 <div
                   className="pointer-events-none absolute inset-0"
                   style={{
-                    background: "linear-gradient(to bottom, hsla(0,0%,100%,0.15) 0%, transparent 50%, hsla(0,0%,0%,0.1) 100%)",
+                    background: "linear-gradient(to bottom, hsla(0,0%,100%,0.12) 0%, transparent 50%, hsla(0,0%,0%,0.08) 100%)",
                   }}
                 />
               )}
               <span className="relative z-10">{ch}</span>
-              {/* Divider line */}
               <div className="absolute inset-x-0 top-1/2 h-px -translate-y-px" style={{ backgroundColor: `${bg}66` }} />
             </div>
           )
         )}
       </div>
 
-      {/* Label */}
       <div className="flex items-center justify-between">
         <div>
           <h3 className="font-mono text-sm font-semibold text-foreground">{theme.label}</h3>
@@ -112,4 +113,30 @@ const ThemeCard = ({
   );
 };
 
-export default Themes;
+export default function ThemesPage() {
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const toggleFullscreen = useCallback(() => {
+    if (typeof document !== "undefined") {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+  }, []);
+
+  return (
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background">
+      <NavBar 
+        onSettingsClick={() => setSettingsOpen(true)} 
+        onFullscreen={toggleFullscreen}
+      />
+      <main className="flex flex-1 items-center justify-center px-4 w-full pt-20">
+        <ThemesContent />
+      </main>
+      <Footer />
+      <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+    </div>
+  );
+}
