@@ -20,21 +20,11 @@ export default function AuthCallbackPage() {
         return;
       }
 
-      console.log("[AuthCallback] Exchanging code for session...");
-      const { error, data } = await supabase.auth.exchangeCodeForSession(code);
-      console.log("[AuthCallback] exchangeCodeForSession error:", error);
-      console.log("[AuthCallback] exchangeCodeForSession data:", data);
+      // Let Supabase handle the session from URL automatically
+      console.log("[AuthCallback] Waiting for session detection...");
+      // Wait a bit for Supabase to detect and set the session from URL
+      await new Promise((res) => setTimeout(res, 1000));
 
-      if (error) {
-        console.error("[AuthCallback] Auth callback error:", error);
-        router.replace("/auth");
-        return;
-      }
-
-      // Give Supabase a moment to establish the session
-      await new Promise((res) => setTimeout(res, 500));
-
-      // Verify session before redirecting
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       console.log("[AuthCallback] getSession error:", sessionError);
       console.log("[AuthCallback] getSession session:", !!session);
