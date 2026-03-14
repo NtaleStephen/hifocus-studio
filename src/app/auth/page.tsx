@@ -56,7 +56,7 @@ const AuthContent = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: typeof window !== 'undefined' ? window.location.origin : '',
+          redirectTo: typeof window !== "undefined" ? `${window.location.origin}/auth/callback` : "",
         },
       });
       if (error) throw error;
@@ -177,4 +177,6 @@ const AuthContent = () => {
   );
 };
 
-export default AuthContent;
+export default function AuthPage() {
+  return <AuthContent />;
+}
