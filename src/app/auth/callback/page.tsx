@@ -12,31 +12,40 @@ export default function AuthCallbackPage() {
     const run = async () => {
       const code = searchParams.get("code");
       const next = searchParams.get("next") ?? "/";
+      console.log("[AuthCallback] code:", !!code, "next:", next);
 
       if (!code) {
+        console.error("[AuthCallback] No code in URL");
         router.replace("/auth");
         return;
       }
 
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
+      console.log("[AuthCallback] Exchanging code for session...");
+      const { error, data } = await supabase.auth.exchangeCodeForSession(code);
+      console.log("[AuthCallback] exchangeCodeForSession error:", error);
+      console.log("[AuthCallback] exchangeCodeForSession data:", data);
 
       if (error) {
-        console.error("Auth callback error:", error);
+        console.error("[AuthCallback] Auth callback error:", error);
         router.replace("/auth");
         return;
       }
 
       // Give Supabase a moment to establish the session
-      await new Promise((res) => setTimeout(res, 300));
+      await new Promise((res) => setTimeout(res, 500));
 
       // Verify session before redirecting
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      console.log("[AuthCallback] getSession error:", sessionError);
+      console.log("[AuthCallback] getSession session:", !!session);
+
       if (!session) {
-        console.error("No session after callback");
+        console.error("[AuthCallback] No session after callback");
         router.replace("/auth");
         return;
       }
 
+      console.log("[AuthCallback] Redirecting to:", next);
       router.replace(next);
     };
 
