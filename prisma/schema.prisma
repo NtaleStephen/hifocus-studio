@@ -7,14 +7,68 @@ datasource db {
 }
 
 model User {
-  id            String         @id
-  email         String         @unique
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id               String         @id
+  email            String         @unique
+  stripeCustomerId String?        @unique
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 
-  settings      Settings?
+  plan             Plan           @default(SEEDLING)
+
+  settings         Settings?
+  focusSessions    FocusSession[]
+  projects         Project[]
+  tasks            Task[]
+
+  ownedWorkspaces  Workspace[]         @relation("WorkspaceOwner")
+  memberships      WorkspaceMember[]
+}
+
+enum Plan {
+  SEEDLING
+  FLOW
+  DEEP_WORK
+  STUDIO
+}
+
+// ─── Workspace ───────────────────────────────────────────────────────────────
+
+model Workspace {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  ownerId     String
+  logoUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  owner         User               @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members       WorkspaceMember[]
+  projects      Project[]
+  tasks         Task[]
   focusSessions FocusSession[]
 }
+
+model WorkspaceMember {
+  id          String          @id @default(uuid())
+  workspaceId String
+  userId      String
+  role        WorkspaceRole   @default(MEMBER)
+  joinedAt    DateTime        @default(now())
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+}
+
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+// ─── Settings ────────────────────────────────────────────────────────────────
 
 model Settings {
   id            String   @id @default(uuid())
@@ -31,12 +85,65 @@ model Settings {
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+// ─── Focus Session ───────────────────────────────────────────────────────────
+
 model FocusSession {
-  id            String   @id @default(uuid())
+  id          String   @id @default(uuid())
+  userId      String
+  workspaceId String?
+  projectId   String?
+  taskId      String?
+  duration    Int      // Duration in minutes
+  type        String   @default("pomodoro") // Can be pomodoro, countdown
+  completedAt DateTime @default(now())
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  project   Project?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  task    Task?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+}
+
+// ─── Project ─────────────────────────────────────────────────────────────────
+
+model Project {
+  id            String         @id @default(uuid())
   userId        String
-  duration      Int      // Duration in minutes
-  type          String   @default("pomodoro") // Can be pomodoro, countdown
-  completedAt   DateTime @default(now())
-  
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspaceId   String?
+  name          String
+  color         String? 
+  archivedAt    DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace     Workspace?     @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  tasks         Task[]
+  focusSessions FocusSession[]
+}
+
+// ─── Task ─────────────────────────────────────────────────────────────────────
+
+model Task {
+  id            String         @id @default(uuid())
+  userId        String
+  workspaceId   String?
+  projectId     String?
+  name          String
+  completed     Boolean        @default(false)
+  priority      TaskPriority   @default(MEDIUM)
+  dueDate       DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace     Workspace?     @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  project       Project?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  focusSessions FocusSession[]
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
 }

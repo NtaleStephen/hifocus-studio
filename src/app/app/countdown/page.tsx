@@ -8,9 +8,17 @@ import { useSettings } from "@/contexts/SettingsContext";
 import FlipCard from "@/components/FlipCard";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTaskSelection } from "@/contexts/TaskContext";
 
-const CountdownContent = ({ initialTime }: { initialTime?: { hours: number; minutes: number; seconds: number } }) => {
+const CountdownContent = ({
+  initialTime,
+}: {
+  initialTime?: { hours: number; minutes: number; seconds: number };
+}) => {
+  const { user, session } = useAuth();
   const { settings } = useSettings();
+  const { selection } = useTaskSelection();
   const [totalSeconds, setTotalSeconds] = useState(0);
   const [remaining, setRemaining] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -25,6 +33,31 @@ const CountdownContent = ({ initialTime }: { initialTime?: { hours: number; minu
     }
   }, [initialTime]);
 
+  const persistSession = useCallback(
+    async (elapsedSeconds: number) => {
+      if (!user || !session) return;
+      const minutes = Math.max(1, Math.round(elapsedSeconds / 60));
+      try {
+        await fetch("/api/sessions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            durationMinutes: minutes,
+            type: "countdown",
+            projectId: selection.projectId,
+            taskId: selection.taskId,
+          }),
+        });
+      } catch (error) {
+        console.error("Failed to persist countdown session", error);
+      }
+    },
+    [user, session, selection.projectId, selection.taskId],
+  );
+
   useEffect(() => {
     if (isRunning && remaining > 0) {
       intervalRef.current = setInterval(() => {
@@ -32,6 +65,7 @@ const CountdownContent = ({ initialTime }: { initialTime?: { hours: number; minu
           if (prev <= 1) {
             setIsRunning(false);
             setIsComplete(true);
+            void persistSession(totalSeconds);
             return 0;
           }
           return prev - 1;
@@ -41,7 +75,7 @@ const CountdownContent = ({ initialTime }: { initialTime?: { hours: number; minu
       clearInterval(intervalRef.current);
     }
     return () => clearInterval(intervalRef.current);
-  }, [isRunning, remaining]);
+  }, [isRunning, remaining, totalSeconds, persistSession]);
 
   const h = Math.floor(remaining / 3600).toString().padStart(2, "0");
   const m = Math.floor((remaining % 3600) / 60).toString().padStart(2, "0");

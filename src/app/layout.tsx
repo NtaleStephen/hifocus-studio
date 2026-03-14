@@ -5,6 +5,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SettingsProvider } from "@/contexts/SettingsContext";
+import { TaskProvider } from "@/contexts/TaskContext";
+import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 const inter = Inter({
@@ -49,10 +51,14 @@ export default function RootLayout({
         >
           <AuthProvider>
             <SettingsProvider>
-              <ProtectedRoute>
-                {children}
-              </ProtectedRoute>
-              <Toaster />
+              <TaskProvider>
+                <WorkspaceProvider>
+                  <ProtectedRoute>
+                    {children}
+                  </ProtectedRoute>
+                  <Toaster />
+                </WorkspaceProvider>
+              </TaskProvider>
             </SettingsProvider>
           </AuthProvider>
         </ThemeProvider>

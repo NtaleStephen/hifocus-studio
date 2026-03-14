@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import type { SoundId } from "@/lib/sounds";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface Settings {
   is24Hour: boolean;
@@ -36,21 +37,51 @@ export const useSettings = () => {
 
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [settings, setSettings] = useState<Settings>(defaultSettings);
+  const { session } = useAuth();
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem("hifocus-settings");
-      if (stored) {
-        setSettings({ ...defaultSettings, ...JSON.parse(stored) });
+    const load = async () => {
+      if (!session) return;
+      try {
+        const res = await fetch("/api/settings", {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        });
+        if (!res.ok) return;
+        const data = (await res.json()) as { settings?: Partial<Settings> };
+        if (data.settings) {
+          setSettings((prev) => ({ ...prev, ...data.settings }));
+        }
+      } catch (e) {
+        console.warn("Failed to load settings from API", e);
       }
-    } catch (e) {
-      console.warn("Failed to load settings", e);
-    }
-  }, []);
+    };
+    void load();
+  }, [session]);
 
   useEffect(() => {
-    localStorage.setItem("hifocus-settings", JSON.stringify(settings));
-  }, [settings]);
+    if (!session) return;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => {
+      fetch("/api/settings", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify(settings),
+        signal: controller.signal,
+      }).catch((e) => {
+        console.warn("Failed to persist settings", e);
+      });
+    }, 400);
+
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [settings, session]);
 
   const updateSettings = (partial: Partial<Settings>) => {
     setSettings((prev) => ({ ...prev, ...partial }));

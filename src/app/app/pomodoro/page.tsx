@@ -9,14 +9,45 @@ import { playSound } from "@/lib/sounds";
 import FlipCard from "@/components/FlipCard";
 import { Play, Pause, RotateCcw, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTaskSelection } from "@/contexts/TaskContext";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
 
 const PomodoroContent = () => {
+  const { user, session } = useAuth();
   const { settings } = useSettings();
+  const { selection } = useTaskSelection();
+  const { activeWorkspace } = useWorkspace();
   const [duration, setDuration] = useState(25);
   const [remaining, setRemaining] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
+
+  const persistSession = useCallback(
+    async (completedMinutes: number) => {
+      if (!user || !session) return;
+      try {
+        await fetch("/api/sessions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            durationMinutes: completedMinutes,
+            type: "pomodoro",
+            projectId: selection.projectId,
+            taskId: selection.taskId,
+            workspaceId: activeWorkspace?.id ?? null,
+          }),
+        });
+      } catch (error) {
+        console.error("Failed to persist pomodoro session", error);
+      }
+    },
+    [user, session, selection.projectId, selection.taskId, activeWorkspace],
+  );
 
   useEffect(() => {
     if (isRunning && remaining > 0) {
@@ -26,6 +57,7 @@ const PomodoroContent = () => {
             setIsRunning(false);
             setIsComplete(true);
             playSound(settings.alertSound);
+            void persistSession(duration);
             return 0;
           }
           return prev - 1;
@@ -35,7 +67,7 @@ const PomodoroContent = () => {
       clearInterval(intervalRef.current);
     }
     return () => clearInterval(intervalRef.current);
-  }, [isRunning, remaining, settings.alertSound]);
+  }, [isRunning, remaining, settings.alertSound, duration, persistSession]);
 
   const m = Math.floor(remaining / 60).toString().padStart(2, "0");
   const s = (remaining % 60).toString().padStart(2, "0");
