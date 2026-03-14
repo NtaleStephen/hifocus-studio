@@ -21,6 +21,18 @@ export default function AuthCallbackPage() {
       const { error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
+        console.error("Auth callback error:", error);
+        router.replace("/auth");
+        return;
+      }
+
+      // Give Supabase a moment to establish the session
+      await new Promise((res) => setTimeout(res, 300));
+
+      // Verify session before redirecting
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        console.error("No session after callback");
         router.replace("/auth");
         return;
       }
