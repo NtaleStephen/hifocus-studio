@@ -40,6 +40,10 @@ export default function LandingPage() {
   const clockRotation = useTransform(scrollYProgress, [0, 1], [0, 1080]); // 3 full rotations
   const clockScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 1.2, 0.9]);
 
+  // Floating flip cards for the left side
+  const flipLeftY1 = useTransform(scrollYProgress, [0, 1], [0, 800]);
+  const flipLeftY2 = useTransform(scrollYProgress, [0, 1], [800, -200]);
+
   // Current Time for Hero 
   const [time, setTime] = useState<Date | null>(null);
   const { theme, setTheme } = useTheme();
@@ -151,44 +155,55 @@ export default function LandingPage() {
       </section>
 
       {/* Parallax Revolving Clock & Features Section */}
-      <section id="features" className="relative min-h-[200vh] border-t border-border/50 bg-secondary/10">
+      <section id="features" className="relative border-t border-border/50 bg-secondary/10">
         
-        {/* Sticky Background Clock */}
-        <div className="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden pointer-events-none z-0">
-          <motion.div 
-            style={{ 
-              rotate: clockRotation, 
-              scale: clockScale,
-              opacity: 0.2
-            }}
-            className="absolute -right-[20%] md:-right-[10%] top-1/2 -translate-y-1/2 w-[800px] h-[800px] border-[2px] border-primary rounded-full flex items-center justify-center opacity-30"
-          >
-            {/* Clock Markers */}
-            {[...Array(12)].map((_, i) => (
-              <div 
-                key={i} 
-                className="absolute w-1 h-8 bg-primary opacity-50"
-                style={{ 
-                  transform: `rotate(${i * 30}deg) translateY(-380px)`
-                }}
-              />
-            ))}
-            {/* Concentric rings */}
-            <div className="absolute w-[600px] h-[600px] border border-primary/40 rounded-full" />
-            <div className="absolute w-[400px] h-[400px] border-2 border-primary/20 rounded-full border-dashed" />
-            
-            {/* Rotating hand */}
-            <div className="absolute w-2 h-64 bg-gradient-to-t from-primary to-transparent rounded-full origin-bottom bottom-1/2 transform rotate-45" />
-            <div className="absolute w-8 h-8 bg-background border-4 border-primary rounded-full" />
-          </motion.div>
+        {/* Sticky Background Clocks */}
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+          <div className="sticky top-0 h-screen w-full flex flex-col justify-center">
+            {/* Left Parallax Flip Cards */}
+            <motion.div style={{ y: flipLeftY1 }} className="absolute left-[5%] md:left-[10%] top-[-10%] md:top-[10%] opacity-30 transform -rotate-12 scale-75 md:scale-100 hidden sm:block">
+              <FlipCardAnimation value="25" />
+            </motion.div>
+            <motion.div style={{ y: flipLeftY2 }} className="absolute left-[15%] md:left-[20%] bottom-[-10%] md:bottom-[10%] opacity-20 transform rotate-12 scale-50 md:scale-75 hidden sm:block">
+              <FlipCardAnimation value="05" />
+            </motion.div>
+
+            {/* Revolving Background Clock */}
+            <motion.div 
+              style={{ 
+                rotate: clockRotation, 
+                scale: clockScale,
+                opacity: 0.8
+              }}
+              className="absolute right-[-20%] md:right-10 top-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] border-[4px] border-primary rounded-full flex items-center justify-center"
+            >
+              {/* Clock Markers */}
+              {[...Array(12)].map((_, i) => (
+                <div 
+                  key={i} 
+                  className="absolute top-1/2 left-1/2 -mt-5 -ml-[3px]"
+                  style={{ transform: `rotate(${i * 30}deg)` }}
+                >
+                  <div className="w-1.5 h-10 bg-primary opacity-60 -translate-y-[280px] md:-translate-y-[380px]"></div>
+                </div>
+              ))}
+              {/* Concentric rings */}
+              <div className="absolute w-[450px] h-[450px] md:w-[600px] md:h-[600px] border-[2px] border-primary/40 rounded-full" />
+              <div className="absolute w-[300px] h-[300px] md:w-[400px] md:h-[400px] border-[3px] border-primary/20 rounded-full border-dashed" />
+              
+              {/* Rotating hand */}
+              <div className="absolute w-2 h-56 md:h-72 bg-gradient-to-t from-primary to-transparent rounded-full origin-bottom bottom-1/2 transform rotate-45 pointer-events-none" />
+              <div className="absolute w-8 h-8 bg-background border-4 border-primary rounded-full" />
+            </motion.div>
+          </div>
         </div>
 
         {/* Scrolling Content over the clock */}
-        <div className="absolute top-0 inset-x-0 z-10 py-32">
+        <div className="relative z-10 py-32">
           <div className="max-w-7xl mx-auto px-4 space-y-48 md:space-y-64">
             
             {/* Feature 1 */}
-            <div className="max-w-xl bg-background/80 backdrop-blur-lg p-8 rounded-3xl border border-border shadow-xl">
+            <div className="max-w-xl bg-background/50 backdrop-blur-2xl p-8 rounded-3xl border border-white/10 dark:border-white/5 shadow-2xl">
               <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center border border-primary/30 text-primary mb-6">
                 <Brain className="h-7 w-7" />
               </div>
@@ -206,7 +221,7 @@ export default function LandingPage() {
             </div>
 
             {/* Feature 2 */}
-            <div className="max-w-xl bg-background/80 backdrop-blur-lg p-8 rounded-3xl border border-border shadow-xl md:mr-auto">
+            <div className="max-w-xl bg-background/50 backdrop-blur-2xl p-8 rounded-3xl border border-white/10 dark:border-white/5 shadow-2xl md:mr-auto">
               <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center border border-primary/30 text-primary mb-6">
                 <Target className="h-7 w-7" />
               </div>
@@ -217,7 +232,7 @@ export default function LandingPage() {
             </div>
 
             {/* Feature 3 */}
-            <div className="max-w-xl bg-background/80 backdrop-blur-lg p-8 rounded-3xl border border-border shadow-xl">
+            <div className="max-w-xl bg-background/50 backdrop-blur-2xl p-8 rounded-3xl border border-white/10 dark:border-white/5 shadow-2xl">
               <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center border border-primary/30 text-primary mb-6">
                 <Sparkles className="h-7 w-7" />
               </div>
@@ -349,17 +364,20 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Layer */}
-      <section className="py-32 bg-primary text-primary-foreground text-center px-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-        <div className="max-w-3xl mx-auto space-y-8 relative z-10">
-          <h2 className="text-5xl sm:text-7xl font-bold font-mono tracking-tighter">Your time is yours again.</h2>
-          <p className="text-xl sm:text-2xl font-light opacity-90">Jump right into the workspace. No installations required.</p>
-          <div className="pt-8">
-            <Link href="/app">
-              <Button size="lg" variant="secondary" className="h-16 px-12 rounded-full text-lg font-bold text-primary hover:scale-105 transition-transform shadow-2xl">
-                Enter Workspace <ArrowRight className="h-5 w-5 ml-2" />
-              </Button>
-            </Link>
+      <section className="py-24 px-4 relative">
+        <div className="max-w-5xl mx-auto rounded-[3rem] bg-primary text-primary-foreground text-center p-12 sm:p-24 relative overflow-hidden shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          <div className="relative z-10 space-y-8">
+            <h2 className="text-5xl sm:text-7xl font-bold font-mono tracking-tighter">Your time is yours again.</h2>
+            <p className="text-xl sm:text-2xl font-light opacity-90">Jump right into the workspace. No installations required.</p>
+            <div className="pt-8">
+              <Link href="/app">
+                <Button size="lg" variant="secondary" className="h-16 px-12 rounded-full text-lg font-bold text-primary hover:scale-105 transition-transform shadow-2xl">
+                  Enter Workspace <ArrowRight className="h-5 w-5 ml-2" />
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
