@@ -8,6 +8,7 @@ import { SettingsProvider } from "@/contexts/SettingsContext";
 import { TaskProvider } from "@/contexts/TaskContext";
 import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { AppThemeApplier } from "@/components/AppThemeApplier";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -53,6 +54,7 @@ export default function RootLayout({
             <SettingsProvider>
               <TaskProvider>
                 <WorkspaceProvider>
+                  <AppThemeApplier />
                   <ProtectedRoute>
                     {children}
                   </ProtectedRoute>
