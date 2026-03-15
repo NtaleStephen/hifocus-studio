@@ -18,6 +18,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
@@ -59,7 +60,10 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
       className="fixed left-0 right-0 top-0 z-40 flex items-center justify-center gap-1 p-4"
       style={{ backgroundColor: "hsl(var(--nav-bg))" }}
     >
-      <div className="flex items-center gap-1 rounded-full border border-border bg-card/60 px-2 py-1 backdrop-blur-md shadow-lg">
+      <div className="flex items-center gap-1 rounded-full border border-border bg-card/60 px-2 pl-3 py-1 backdrop-blur-md shadow-lg">
+        <Link href="/" className="flex items-center hover:opacity-80 transition-opacity mr-2">
+          <Image src="/logo.png" alt="Hifocus Logo" width={24} height={24} className="rounded shadow-sm" />
+        </Link>
         {links.map(({ path, icon: Icon, label }) => (
           <Link
             key={path}

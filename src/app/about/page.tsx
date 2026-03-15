@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import { useState, useCallback } from "react";
 import NavBar from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
@@ -12,7 +14,8 @@ import { Button } from "@/components/ui/button";
 const AboutContent = () => {
   return (
     <div className="w-full max-w-4xl mx-auto py-12 px-4 animate-fade-in space-y-12">
-      <section className="text-center space-y-4">
+      <section className="text-center flex flex-col items-center justify-center space-y-6">
+        <Image src="/logo.png" alt="Hifocus Logo" width={80} height={80} className="rounded-2xl shadow-xl shadow-primary/20 border border-primary/20" />
         <h1 className="font-mono text-4xl font-bold tracking-tighter text-foreground sm:text-5xl">HIFOCUS</h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
           A beautiful, distraction-free flip clock designed to help you stay focused and productive.

@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, Lock, Eye, EyeOff, Clock } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import Image from "next/image";
 
 const AuthContent = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -75,9 +76,9 @@ const AuthContent = () => {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm space-y-8">
         <div className="flex flex-col items-center gap-2">
-          <div className="flex items-center gap-2 text-primary">
-            <Clock className="h-8 w-8" />
-            <span className="text-2xl font-bold tracking-wider font-mono">HIFOCUS</span>
+          <div className="flex items-center justify-center gap-3 text-primary">
+            <Image src="/logo.png" alt="Hifocus Logo" width={48} height={48} className="rounded-xl shadow-sm" />
+            <span className="text-3xl font-bold tracking-wider font-mono">HIFOCUS</span>
           </div>
           <p className="text-sm text-muted-foreground">
             {isLogin ? "Welcome back" : "Create your account"}

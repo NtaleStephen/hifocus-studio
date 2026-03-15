@@ -2,8 +2,9 @@
 
 import { useRef, useEffect, useState } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Clock, Target, Sparkles, Brain, Zap, Maximize } from "lucide-react";
+import { ArrowRight, Target, Sparkles, Brain, Zap, Maximize } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const FlipCardAnimation = ({ value }: { value: string }) => {
@@ -49,8 +50,8 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background text-foreground relative selection:bg-primary/20" ref={containerRef}>
       {/* Nav */}
       <nav className="fixed top-0 inset-x-0 z-50 p-6 flex items-center justify-between backdrop-blur-md bg-background/50 border-b border-border/50">
-        <div className="flex items-center gap-2">
-          <Clock className="h-6 w-6 text-primary" />
+        <div className="flex items-center gap-3">
+          <Image src="/logo.png" alt="Hifocus Logo" width={32} height={32} className="rounded" />
           <span className="font-mono font-bold text-xl tracking-tighter">HIFOCUS</span>
         </div>
         <Link href="/app">
