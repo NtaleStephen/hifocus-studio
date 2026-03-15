@@ -6,32 +6,9 @@ export interface ThemeConfig {
   id: ThemeId;
   label: string;
   description: string;
-  // CSS custom properties (HSL values without hsl() wrapper)
-  vars: {
-    "--background": string;
-    "--foreground": string;
-    "--card": string;
-    "--card-foreground": string;
-    "--primary": string;
-    "--primary-foreground": string;
-    "--secondary": string;
-    "--secondary-foreground": string;
-    "--muted": string;
-    "--muted-foreground": string;
-    "--accent": string;
-    "--accent-foreground": string;
-    "--border": string;
-    "--input": string;
-    "--ring": string;
-    "--digit-bg": string;
-    "--digit-fg": string;
-    "--digit-divider": string;
-    "--nav-bg": string;
-    "--glow": string;
-  };
-  // Optional special effects on digit cards
+  lightVars: Record<string, string>;
+  darkVars: Record<string, string>;
   cardEffect?: "none" | "stripes" | "texture" | "glossy";
-  // Preview swatch colors for theme picker
   swatches: [string, string, string];
 }
 
@@ -40,7 +17,29 @@ export const themes: ThemeConfig[] = [
     id: "midnight",
     label: "Midnight",
     description: "Pure dark with amber glow",
-    vars: {
+    lightVars: {
+      "--background": "0 0% 98%",
+      "--foreground": "0 0% 10%",
+      "--card": "0 0% 95%",
+      "--card-foreground": "0 0% 10%",
+      "--primary": "36 90% 45%",
+      "--primary-foreground": "0 0% 98%",
+      "--secondary": "0 0% 90%",
+      "--secondary-foreground": "0 0% 20%",
+      "--muted": "0 0% 90%",
+      "--muted-foreground": "0 0% 45%",
+      "--accent": "36 90% 45%",
+      "--accent-foreground": "0 0% 98%",
+      "--border": "0 0% 85%",
+      "--input": "0 0% 85%",
+      "--ring": "36 90% 45%",
+      "--digit-bg": "0 0% 92%",
+      "--digit-fg": "0 0% 10%",
+      "--digit-divider": "0 0% 85%",
+      "--nav-bg": "0 0% 98% / 0.9",
+      "--glow": "36 90% 45% / 0.15",
+    },
+    darkVars: {
       "--background": "0 0% 4%",
       "--foreground": "0 0% 95%",
       "--card": "0 0% 8%",
@@ -69,11 +68,11 @@ export const themes: ThemeConfig[] = [
     id: "espresso",
     label: "Espresso",
     description: "Warm cream with rich brown cards",
-    vars: {
+    lightVars: {
       "--background": "30 20% 88%",
       "--foreground": "20 15% 20%",
-      "--card": "20 12% 30%",
-      "--card-foreground": "30 20% 92%",
+      "--card": "20 12% 80%",
+      "--card-foreground": "20 15% 20%",
       "--primary": "20 50% 40%",
       "--primary-foreground": "30 20% 95%",
       "--secondary": "30 15% 80%",
@@ -91,6 +90,28 @@ export const themes: ThemeConfig[] = [
       "--nav-bg": "30 20% 88% / 0.9",
       "--glow": "20 50% 40% / 0.15",
     },
+    darkVars: {
+      "--background": "30 20% 12%",
+      "--foreground": "30 20% 90%",
+      "--card": "20 12% 16%",
+      "--card-foreground": "30 20% 90%",
+      "--primary": "20 50% 50%",
+      "--primary-foreground": "30 20% 10%",
+      "--secondary": "30 15% 20%",
+      "--secondary-foreground": "30 20% 80%",
+      "--muted": "30 12% 18%",
+      "--muted-foreground": "30 15% 60%",
+      "--accent": "20 50% 50%",
+      "--accent-foreground": "30 20% 10%",
+      "--border": "30 10% 25%",
+      "--input": "30 10% 25%",
+      "--ring": "20 50% 50%",
+      "--digit-bg": "20 12% 18%",
+      "--digit-fg": "30 20% 92%",
+      "--digit-divider": "20 12% 14%",
+      "--nav-bg": "30 20% 12% / 0.9",
+      "--glow": "20 50% 50% / 0.15",
+    },
     cardEffect: "glossy",
     swatches: ["hsl(30,20%,88%)", "hsl(20,12%,30%)", "hsl(20,50%,40%)"],
   },
@@ -98,7 +119,29 @@ export const themes: ThemeConfig[] = [
     id: "denim",
     label: "Denim",
     description: "Deep blue fabric with golden digits",
-    vars: {
+    lightVars: {
+      "--background": "220 30% 90%",
+      "--foreground": "220 30% 15%",
+      "--card": "220 25% 85%",
+      "--card-foreground": "220 30% 15%",
+      "--primary": "45 80% 45%",
+      "--primary-foreground": "220 30% 95%",
+      "--secondary": "220 20% 80%",
+      "--secondary-foreground": "220 30% 25%",
+      "--muted": "220 20% 75%",
+      "--muted-foreground": "220 15% 45%",
+      "--accent": "45 80% 45%",
+      "--accent-foreground": "220 30% 95%",
+      "--border": "220 20% 75%",
+      "--input": "220 20% 75%",
+      "--ring": "45 80% 45%",
+      "--digit-bg": "220 28% 80%",
+      "--digit-fg": "45 80% 35%",
+      "--digit-divider": "220 30% 70%",
+      "--nav-bg": "220 30% 90% / 0.9",
+      "--glow": "45 80% 45% / 0.15",
+    },
+    darkVars: {
       "--background": "220 30% 14%",
       "--foreground": "45 60% 85%",
       "--card": "220 25% 18%",
@@ -127,7 +170,7 @@ export const themes: ThemeConfig[] = [
     id: "coral",
     label: "Coral",
     description: "Bold red with striped light cards",
-    vars: {
+    lightVars: {
       "--background": "0 70% 60%",
       "--foreground": "0 0% 10%",
       "--card": "0 10% 88%",
@@ -149,6 +192,28 @@ export const themes: ThemeConfig[] = [
       "--nav-bg": "0 70% 60% / 0.9",
       "--glow": "0 0% 10% / 0.1",
     },
+    darkVars: {
+      "--background": "0 70% 25%",
+      "--foreground": "0 0% 95%",
+      "--card": "0 10% 15%",
+      "--card-foreground": "0 0% 95%",
+      "--primary": "0 70% 60%",
+      "--primary-foreground": "0 0% 10%",
+      "--secondary": "0 50% 20%",
+      "--secondary-foreground": "0 0% 85%",
+      "--muted": "0 55% 25%",
+      "--muted-foreground": "0 20% 65%",
+      "--accent": "0 70% 60%",
+      "--accent-foreground": "0 0% 10%",
+      "--border": "0 40% 30%",
+      "--input": "0 40% 30%",
+      "--ring": "0 70% 60%",
+      "--digit-bg": "0 8% 12%",
+      "--digit-fg": "0 0% 96%",
+      "--digit-divider": "0 10% 8%",
+      "--nav-bg": "0 70% 25% / 0.9",
+      "--glow": "0 70% 60% / 0.1",
+    },
     cardEffect: "stripes",
     swatches: ["hsl(0,70%,60%)", "hsl(0,10%,88%)", "hsl(0,0%,10%)"],
   },
@@ -156,7 +221,29 @@ export const themes: ThemeConfig[] = [
     id: "vintage",
     label: "Vintage",
     description: "Retro mauve with white cards and red text",
-    vars: {
+    lightVars: {
+      "--background": "330 20% 85%",
+      "--foreground": "330 15% 20%",
+      "--card": "330 20% 92%",
+      "--card-foreground": "330 15% 20%",
+      "--primary": "0 80% 48%",
+      "--primary-foreground": "330 20% 95%",
+      "--secondary": "330 15% 75%",
+      "--secondary-foreground": "330 15% 20%",
+      "--muted": "330 15% 75%",
+      "--muted-foreground": "330 10% 45%",
+      "--accent": "0 80% 48%",
+      "--accent-foreground": "330 20% 95%",
+      "--border": "330 15% 70%",
+      "--input": "330 15% 70%",
+      "--ring": "0 80% 48%",
+      "--digit-bg": "0 0% 96%",
+      "--digit-fg": "0 80% 48%",
+      "--digit-divider": "330 10% 88%",
+      "--nav-bg": "330 20% 85% / 0.9",
+      "--glow": "0 80% 48% / 0.2",
+    },
+    darkVars: {
       "--background": "330 15% 30%",
       "--foreground": "0 0% 92%",
       "--card": "0 0% 92%",
@@ -185,27 +272,49 @@ export const themes: ThemeConfig[] = [
     id: "emerald",
     label: "Emerald",
     description: "Vivid green with dark floating cards",
-    vars: {
+    lightVars: {
       "--background": "145 65% 42%",
       "--foreground": "0 0% 100%",
-      "--card": "0 0% 12%",
-      "--card-foreground": "0 0% 95%",
+      "--card": "0 0% 96%",
+      "--card-foreground": "145 65% 15%",
       "--primary": "0 0% 100%",
       "--primary-foreground": "145 65% 35%",
       "--secondary": "145 50% 35%",
       "--secondary-foreground": "0 0% 95%",
       "--muted": "145 40% 38%",
-      "--muted-foreground": "145 20% 85%",
+      "--muted-foreground": "0 0% 100%",
       "--accent": "0 0% 100%",
       "--accent-foreground": "145 65% 35%",
       "--border": "145 40% 35%",
       "--input": "145 40% 35%",
       "--ring": "0 0% 100%",
+      "--digit-bg": "0 0% 96%",
+      "--digit-fg": "145 65% 20%",
+      "--digit-divider": "0 0% 90%",
+      "--nav-bg": "145 65% 42% / 0.9",
+      "--glow": "0 0% 100% / 0.15",
+    },
+    darkVars: {
+      "--background": "145 65% 20%",
+      "--foreground": "0 0% 95%",
+      "--card": "0 0% 12%",
+      "--card-foreground": "0 0% 95%",
+      "--primary": "145 65% 50%",
+      "--primary-foreground": "0 0% 10%",
+      "--secondary": "145 50% 25%",
+      "--secondary-foreground": "0 0% 85%",
+      "--muted": "145 40% 28%",
+      "--muted-foreground": "145 20% 65%",
+      "--accent": "145 65% 50%",
+      "--accent-foreground": "0 0% 10%",
+      "--border": "145 40% 25%",
+      "--input": "145 40% 25%",
+      "--ring": "145 65% 50%",
       "--digit-bg": "0 0% 14%",
       "--digit-fg": "0 0% 96%",
       "--digit-divider": "0 0% 8%",
-      "--nav-bg": "145 65% 42% / 0.9",
-      "--glow": "0 0% 100% / 0.15",
+      "--nav-bg": "145 65% 20% / 0.9",
+      "--glow": "145 65% 50% / 0.15",
     },
     cardEffect: "none",
     swatches: ["hsl(145,65%,42%)", "hsl(0,0%,12%)", "hsl(0,0%,100%)"],
@@ -214,7 +323,29 @@ export const themes: ThemeConfig[] = [
     id: "industrial",
     label: "Industrial",
     description: "Dark metal grid with grungy white digits",
-    vars: {
+    lightVars: {
+      "--background": "0 0% 90%",
+      "--foreground": "0 0% 15%",
+      "--card": "0 0% 85%",
+      "--card-foreground": "0 0% 15%",
+      "--primary": "0 0% 20%",
+      "--primary-foreground": "0 0% 95%",
+      "--secondary": "0 0% 80%",
+      "--secondary-foreground": "0 0% 25%",
+      "--muted": "0 0% 80%",
+      "--muted-foreground": "0 0% 45%",
+      "--accent": "0 0% 20%",
+      "--accent-foreground": "0 0% 95%",
+      "--border": "0 0% 75%",
+      "--input": "0 0% 75%",
+      "--ring": "0 0% 20%",
+      "--digit-bg": "0 0% 85%",
+      "--digit-fg": "0 0% 15%",
+      "--digit-divider": "0 0% 75%",
+      "--nav-bg": "0 0% 90% / 0.9",
+      "--glow": "0 0% 20% / 0.08",
+    },
+    darkVars: {
       "--background": "0 0% 8%",
       "--foreground": "0 0% 90%",
       "--card": "0 0% 11%",
