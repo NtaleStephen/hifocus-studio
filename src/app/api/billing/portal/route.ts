@@ -13,7 +13,14 @@ export async function POST(req: Request) {
     const { user } = authResult;
     const customerId = await getOrCreateStripeCustomer(user.id, user.email);
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    if (!baseUrl) {
+      console.error("[POST /api/billing/portal] NEXT_PUBLIC_APP_URL is not set");
+      return NextResponse.json(
+        { error: "Server configuration error" },
+        { status: 500 }
+      );
+    }
 
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,

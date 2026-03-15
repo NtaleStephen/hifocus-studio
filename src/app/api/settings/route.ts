@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getUserAndSync } from "@/lib/auth-server";
+import { updateSettingsSchema } from "@/lib/validations";
 
 export async function GET(req: Request) {
   try {
@@ -52,6 +53,14 @@ export async function PUT(req: Request) {
     const { user } = authResult;
 
     const body = await req.json();
+    const parsed = updateSettingsSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Invalid input" },
+        { status: 400 },
+      );
+    }
+
     const {
       is24Hour,
       showSeconds,
@@ -59,14 +68,7 @@ export async function PUT(req: Request) {
       theme,
       alertSound,
       hourlyChime,
-    } = body as Partial<{
-      is24Hour: boolean;
-      showSeconds: boolean;
-      showDate: boolean;
-      theme: string;
-      alertSound: string;
-      hourlyChime: boolean;
-    }>;
+    } = parsed.data;
 
     const settings = await prisma.settings.upsert({
       where: { userId: user.id },
@@ -107,4 +109,3 @@ export async function PUT(req: Request) {
     );
   }
 }
-

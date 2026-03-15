@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getUserAndSync } from "@/lib/auth-server";
+import { inviteMemberSchema } from "@/lib/validations";
 
 // POST /api/workspaces/[id]/invite — invite a user by email
 export async function POST(
@@ -26,18 +27,19 @@ export async function POST(
     }
 
     const body = await req.json();
-    const { email, role } = body as { email?: string; role?: string };
-
-    if (!email || !email.trim()) {
-      return NextResponse.json({ error: "Email is required" }, { status: 400 });
+    const parsed = inviteMemberSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Invalid input" },
+        { status: 400 },
+      );
     }
 
-    const validRoles = ["ADMIN", "MEMBER"];
-    const memberRole = validRoles.includes(role ?? "") ? role! : "MEMBER";
+    const { email, role: memberRole } = parsed.data;
 
     // Find the invited user in our DB
     const invitee = await prisma.user.findUnique({
-      where: { email: email.trim().toLowerCase() },
+      where: { email },
     });
 
     if (!invitee) {

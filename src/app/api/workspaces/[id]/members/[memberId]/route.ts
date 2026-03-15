@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getUserAndSync } from "@/lib/auth-server";
+import { changeRoleSchema } from "@/lib/validations";
 
 // PATCH /api/workspaces/[id]/members/[memberId] — change a member's role
 export async function PATCH(
@@ -26,12 +27,15 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const { role } = body as { role?: string };
-
-    const validRoles = ["ADMIN", "MEMBER"];
-    if (!role || !validRoles.includes(role)) {
-      return NextResponse.json({ error: "Invalid role. Must be ADMIN or MEMBER." }, { status: 400 });
+    const parsed = changeRoleSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Invalid input" },
+        { status: 400 },
+      );
     }
+
+    const { role } = parsed.data;
 
     // Prevent downgrading the owner themselves
     const targetMember = await prisma.workspaceMember.findUnique({
@@ -48,7 +52,7 @@ export async function PATCH(
 
     const updated = await prisma.workspaceMember.update({
       where: { id: memberId },
-      data: { role: role as "ADMIN" | "MEMBER" },
+      data: { role },
       include: {
         user: { select: { id: true, email: true } },
       },

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getUserAndSync } from "@/lib/auth-server";
+import { createWorkspaceSchema } from "@/lib/validations";
 
 function slugify(text: string) {
   return text
@@ -68,14 +69,18 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { name } = body as { name?: string };
-
-    if (!name || !name.trim()) {
-      return NextResponse.json({ error: "Workspace name is required" }, { status: 400 });
+    const parsed = createWorkspaceSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Invalid input" },
+        { status: 400 },
+      );
     }
 
+    const { name } = parsed.data;
+
     // Generate a unique slug
-    let slug = slugify(name.trim());
+    let slug = slugify(name);
     const existing = await prisma.workspace.findUnique({ where: { slug } });
     if (existing) {
       slug = `${slug}-${Date.now()}`;
@@ -83,7 +88,7 @@ export async function POST(req: Request) {
 
     const workspace = await prisma.workspace.create({
       data: {
-        name: name.trim(),
+        name,
         slug,
         ownerId: user.id,
         members: {

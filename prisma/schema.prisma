@@ -3,7 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -101,6 +103,9 @@ model FocusSession {
   workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   project   Project?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
   task    Task?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@index([userId, completedAt])
+  @@index([workspaceId, completedAt])
 }
 
 // ─── Project ─────────────────────────────────────────────────────────────────
@@ -119,6 +124,8 @@ model Project {
   workspace     Workspace?     @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   tasks         Task[]
   focusSessions FocusSession[]
+
+  @@index([userId, workspaceId])
 }
 
 // ─── Task ─────────────────────────────────────────────────────────────────────
@@ -139,6 +146,9 @@ model Task {
   workspace     Workspace?     @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   project       Project?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
   focusSessions FocusSession[]
+
+  @@index([userId, workspaceId])
+  @@index([userId, completed])
 }
 
 enum TaskPriority {

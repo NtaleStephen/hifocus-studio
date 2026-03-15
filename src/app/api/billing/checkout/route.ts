@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { getUserAndSync } from "@/lib/auth-server";
 import { STRIPE_PLANS } from "@/lib/stripe-plans";
+import { checkoutSchema } from "@/lib/validations";
 
 export async function POST(req: Request) {
   try {
@@ -11,11 +12,17 @@ export async function POST(req: Request) {
     }
 
     const { user } = authResult;
-    const { priceId } = await req.json();
 
-    if (!priceId) {
-      return NextResponse.json({ error: "Price ID is required" }, { status: 400 });
+    const body = await req.json();
+    const parsed = checkoutSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Invalid input" },
+        { status: 400 },
+      );
     }
+
+    const { priceId } = parsed.data;
 
     // Identify which plan this is
     const planKey = Object.keys(STRIPE_PLANS).find(
@@ -26,7 +33,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid Price ID" }, { status: 400 });
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    if (!baseUrl) {
+      console.error("[POST /api/billing/checkout] NEXT_PUBLIC_APP_URL is not set");
+      return NextResponse.json(
+        { error: "Server configuration error" },
+        { status: 500 }
+      );
+    }
 
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email,

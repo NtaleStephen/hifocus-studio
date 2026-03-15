@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getUserAndSync } from "@/lib/auth-server";
+import { patchWorkspaceSchema } from "@/lib/validations";
 
 // Helper: get the authenticated user's membership role in a workspace (or null)
 async function getMembership(userId: string, workspaceId: string) {
@@ -72,12 +73,20 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const { name, logoUrl } = body as { name?: string; logoUrl?: string };
+    const parsed = patchWorkspaceSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Invalid input" },
+        { status: 400 },
+      );
+    }
+
+    const { name, logoUrl } = parsed.data;
 
     const workspace = await prisma.workspace.update({
       where: { id },
       data: {
-        ...(name && { name: name.trim() }),
+        ...(name && { name }),
         ...(logoUrl !== undefined && { logoUrl }),
       },
     });

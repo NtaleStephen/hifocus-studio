@@ -1,33 +1,30 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getUserAndSync } from "@/lib/auth-server";
+import { createSessionSchema } from "@/lib/validations";
 
 // POST /api/sessions
 // Persist a completed focus session for the authenticated user.
 export async function POST(req: Request) {
   try {
-    const json = await req.json();
-    const { durationMinutes, type, projectId, taskId, workspaceId } = json as {
-      durationMinutes?: number;
-      type?: string;
-      projectId?: string;
-      taskId?: string;
-      workspaceId?: string;
-    };
-
-    if (!durationMinutes || durationMinutes <= 0) {
-      return NextResponse.json(
-        { error: "Invalid durationMinutes" },
-        { status: 400 },
-      );
-    }
-
+    // Authenticate FIRST, before parsing body
     const authResult = await getUserAndSync(req);
     if (!authResult) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { user } = authResult;
+
+    const body = await req.json();
+    const parsed = createSessionSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Invalid input" },
+        { status: 400 },
+      );
+    }
+
+    const { durationMinutes, type, projectId, taskId, workspaceId } = parsed.data;
 
     // Validate workspace membership if workspaceId is provided
     if (workspaceId) {
@@ -43,7 +40,7 @@ export async function POST(req: Request) {
       data: {
         userId: user.id,
         duration: durationMinutes,
-        type: type ?? "pomodoro",
+        type,
         projectId: projectId ?? null,
         taskId: taskId ?? null,
         workspaceId: workspaceId ?? null,

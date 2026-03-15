@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { createClient } from "@supabase/supabase-js";
+import { sanitizeForCsv } from "@/lib/validations";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
@@ -34,8 +35,11 @@ export async function GET(req: Request) {
     const daysParam = url.searchParams.get("days");
     const days = daysParam ? Number.parseInt(daysParam, 10) : 90;
 
+    // Clamp days to a reasonable range to prevent abuse
+    const clampedDays = Math.min(Math.max(Number.isNaN(days) ? 90 : days, 1), 3650);
+
     const since = new Date();
-    since.setDate(since.getDate() - (Number.isNaN(days) ? 90 : days));
+    since.setDate(since.getDate() - clampedDays);
 
     const sessions = await prisma.focusSession.findMany({
       where: {
@@ -66,8 +70,8 @@ export async function GET(req: Request) {
       s.completedAt.toISOString(),
       s.duration.toString(),
       s.type,
-      s.project?.name ?? "",
-      s.task?.name ?? "",
+      sanitizeForCsv(s.project?.name ?? ""),
+      sanitizeForCsv(s.task?.name ?? ""),
     ]);
 
     const csv = [header, ...rows]
@@ -90,4 +94,3 @@ export async function GET(req: Request) {
     );
   }
 }
-
