@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import { 
   ArrowRight, Target, Sparkles, Brain, Zap, Maximize, Moon, Sun, 
-  CheckCircle2, Star, Quote 
+  CheckCircle2, Star, Quote, Building2 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -84,8 +84,8 @@ export default function LandingPage() {
             </button>
           )}
           <Link href="/app">
-            <Button className="rounded-full px-6 font-semibold shadow-[0_0_20px_rgba(234,179,8,0.3)] hover:shadow-[0_0_30px_rgba(234,179,8,0.5)] transition-all">
-              Enter UI <ArrowRight className="h-4 w-4 ml-2" />
+            <Button className="rounded-full px-6 font-semibold transition-all">
+              Enter Workspace <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </Link>
         </div>
@@ -161,10 +161,10 @@ export default function LandingPage() {
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           <div className="sticky top-0 h-screen w-full flex flex-col justify-center">
             {/* Left Parallax Flip Cards */}
-            <motion.div style={{ y: flipLeftY1 }} className="absolute left-[5%] md:left-[10%] top-[-10%] md:top-[10%] opacity-30 transform -rotate-12 scale-75 md:scale-100 hidden sm:block">
+            <motion.div style={{ y: flipLeftY1 }} className="absolute left-[5%] md:left-[10%] top-[-10%] md:top-[10%] opacity-30 transform -rotate-12 scale-50 sm:scale-75 md:scale-100">
               <FlipCardAnimation value="25" />
             </motion.div>
-            <motion.div style={{ y: flipLeftY2 }} className="absolute left-[15%] md:left-[20%] bottom-[-10%] md:bottom-[10%] opacity-20 transform rotate-12 scale-50 md:scale-75 hidden sm:block">
+            <motion.div style={{ y: flipLeftY2 }} className="absolute left-[2%] md:left-[20%] bottom-[-10%] md:bottom-[10%] opacity-20 transform rotate-12 scale-40 sm:scale-50 md:scale-75">
               <FlipCardAnimation value="05" />
             </motion.div>
 
@@ -203,7 +203,14 @@ export default function LandingPage() {
           <div className="max-w-7xl mx-auto px-4 space-y-48 md:space-y-64">
             
             {/* Feature 1 */}
-            <div className="max-w-xl bg-background/50 backdrop-blur-2xl p-8 rounded-3xl border border-white/10 dark:border-white/5 shadow-2xl">
+            <motion.div 
+              initial={{ opacity: 0, rotateX: 45, y: 50 }}
+              whileInView={{ opacity: 1, rotateX: 0, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8 }}
+              style={{ transformOrigin: "bottom center", perspective: 1000 }}
+              className="max-w-xl bg-background/50 backdrop-blur-2xl p-8 rounded-3xl border border-white/10 dark:border-white/5 shadow-2xl"
+            >
               <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center border border-primary/30 text-primary mb-6">
                 <Brain className="h-7 w-7" />
               </div>
@@ -218,10 +225,17 @@ export default function LandingPage() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
 
             {/* Feature 2 */}
-            <div className="max-w-xl bg-background/50 backdrop-blur-2xl p-8 rounded-3xl border border-white/10 dark:border-white/5 shadow-2xl md:mr-auto">
+            <motion.div 
+              initial={{ opacity: 0, rotateX: 45, y: 50 }}
+              whileInView={{ opacity: 1, rotateX: 0, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8 }}
+              style={{ transformOrigin: "bottom center", perspective: 1000 }}
+              className="max-w-xl bg-background/50 backdrop-blur-2xl p-8 rounded-3xl border border-white/10 dark:border-white/5 shadow-2xl md:mr-auto"
+            >
               <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center border border-primary/30 text-primary mb-6">
                 <Target className="h-7 w-7" />
               </div>
@@ -229,10 +243,17 @@ export default function LandingPage() {
               <p className="text-xl text-muted-foreground leading-relaxed">
                 Whether it's a final exam, a product drop, or a 1-hour sprint, dial in exact deadlines. Watch the seconds tick away as urgency translates into flow.
               </p>
-            </div>
+            </motion.div>
 
             {/* Feature 3 */}
-            <div className="max-w-xl bg-background/50 backdrop-blur-2xl p-8 rounded-3xl border border-white/10 dark:border-white/5 shadow-2xl">
+            <motion.div 
+              initial={{ opacity: 0, rotateX: 45, y: 50 }}
+              whileInView={{ opacity: 1, rotateX: 0, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8 }}
+              style={{ transformOrigin: "bottom center", perspective: 1000 }}
+              className="max-w-xl bg-background/50 backdrop-blur-2xl p-8 rounded-3xl border border-white/10 dark:border-white/5 shadow-2xl"
+            >
               <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center border border-primary/30 text-primary mb-6">
                 <Sparkles className="h-7 w-7" />
               </div>
@@ -240,7 +261,7 @@ export default function LandingPage() {
               <p className="text-xl text-muted-foreground leading-relaxed">
                 We painstakingly designed 7 gorgeous themes like <span className="text-red-500 font-bold">Coral</span>, <span className="text-emerald-500 font-bold">Emerald</span>, and <span className="text-slate-500 font-bold">Industrial</span>. Seamlessly integrated with Light and Dark modes.
               </p>
-            </div>
+            </motion.div>
 
           </div>
         </div>
@@ -302,61 +323,99 @@ export default function LandingPage() {
             <p className="text-xl text-muted-foreground">Pick the plan that fits your work style. No hidden fees.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Free Plan */}
-            <div className="bg-card border border-border p-10 rounded-[2.5rem] shadow-lg flex flex-col">
-              <h3 className="text-2xl font-bold font-mono text-foreground mb-2">Essential</h3>
-              <div className="flex items-baseline gap-2 mb-6">
-                <span className="text-5xl font-bold">$0</span>
-                <span className="text-muted-foreground">forever</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Seedling */}
+            <div className="bg-card border border-border p-8 rounded-[2rem] shadow-sm flex flex-col hover:-translate-y-1 transition-transform">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                  <Sparkles className="h-5 w-5" />
+                </div>
+                <h3 className="font-bold text-lg">Seedling</h3>
               </div>
-              <p className="text-muted-foreground mb-8">Everything you need to dive into basic deep work sessions.</p>
-              
-              <ul className="space-y-4 mb-8 flex-1">
-                {["Classic Midnight Theme", "Standard Pomodoro logic", "Countdown timer", "Basic Session Tracking"].map((f, i) => (
-                  <li key={i} className="flex items-center gap-3 text-sm">
-                    <CheckCircle2 className="h-5 w-5 text-muted-foreground" /> {f}
+              <div className="mb-6">
+                <span className="text-3xl font-bold">Free</span>
+              </div>
+              <ul className="space-y-3 mb-8 flex-1">
+                {["Fixed Pomodoro", "5 active tasks", "3 default themes", "7-day history"].map((f, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" /> {f}
                   </li>
                 ))}
               </ul>
-              
-              <Link href="/auth">
-                <Button variant="outline" className="w-full h-14 rounded-full text-lg font-bold border-border hover:bg-secondary">
-                  Start Free
-                </Button>
+              <Link href="/auth" className="mt-auto">
+                <Button variant="outline" className="w-full rounded-xl h-11 border-border">Start Free</Button>
               </Link>
             </div>
 
-            {/* Pro Plan */}
-            <div className="bg-primary/5 border-2 border-primary/50 relative p-10 rounded-[2.5rem] shadow-2xl flex flex-col scale-100 md:scale-105">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                Most Popular
+            {/* FLOW */}
+            <div className="bg-card border border-border p-8 rounded-[2rem] shadow-sm flex flex-col hover:-translate-y-1 transition-transform">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                  <Zap className="h-5 w-5" />
+                </div>
+                <h3 className="font-bold text-lg">Flow</h3>
               </div>
-              <h3 className="text-2xl font-bold font-mono text-foreground mb-2">Pro Focus</h3>
-              <div className="flex items-baseline gap-2 mb-6">
-                <span className="text-5xl font-bold">$9</span>
-                <span className="text-muted-foreground">/month</span>
+              <div className="mb-6">
+                <span className="text-3xl font-bold">$6</span><span className="text-muted-foreground">/mo</span>
               </div>
-              <p className="text-muted-foreground mb-8">Unleash advanced mechanics, artisan themes, and deep analytical reports.</p>
-              
-              <ul className="space-y-4 mb-8 flex-1">
-                {[
-                  "All 7 Artisan Themes (Coral, Emerald, etc.)", 
-                  "Cinematic Idle Fading",
-                  "Advanced Task Workspaces",
-                  "Detailed Analytics & Exports",
-                  "Custom Soundscapes"
-                ].map((f, i) => (
-                  <li key={i} className="flex items-center gap-3 text-sm font-medium">
-                    <CheckCircle2 className="h-5 w-5 text-primary" /> {f}
+              <ul className="space-y-3 mb-8 flex-1">
+                {["Custom intervals", "Unlimited tasks", "Dark mode + 10 themes", "30-day history", "Ambient sounds"].map((f, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" /> {f}
                   </li>
                 ))}
               </ul>
-              
-              <Link href="/auth">
-                <Button className="w-full h-14 rounded-full text-lg font-bold shadow-[0_0_20px_rgba(234,179,8,0.3)] hover:shadow-[0_0_30px_rgba(234,179,8,0.5)] transition-all">
-                  Upgrade to Pro
-                </Button>
+              <Link href="/auth" className="mt-auto">
+                <Button className="w-full rounded-xl h-11 transition-all">Upgrade to Flow</Button>
+              </Link>
+            </div>
+
+            {/* Deep Work */}
+            <div className="bg-primary/5 border-2 border-primary/50 p-8 rounded-[2rem] shadow-2xl flex flex-col hover:-translate-y-1 transition-transform relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                Most Popular
+              </div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                  <Sparkles className="h-5 w-5" />
+                </div>
+                <h3 className="font-bold text-lg">Deep Work</h3>
+              </div>
+              <div className="mb-6">
+                <span className="text-3xl font-bold">$14</span><span className="text-muted-foreground">/mo</span>
+              </div>
+              <ul className="space-y-3 mb-8 flex-1">
+                {["AI focus coach", "Unlimited history", "Custom themes", "Calendar + Slack sync", "Floating widget"].map((f, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm font-medium">
+                    <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" /> {f}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/auth" className="mt-auto">
+                <Button className="w-full rounded-xl h-11 transition-all">Upgrade</Button>
+              </Link>
+            </div>
+
+            {/* Studio */}
+            <div className="bg-card border border-border p-8 rounded-[2rem] shadow-sm flex flex-col hover:-translate-y-1 transition-transform">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                  <Building2 className="h-5 w-5" />
+                </div>
+                <h3 className="font-bold text-lg">Studio</h3>
+              </div>
+              <div className="mb-6">
+                <span className="text-3xl font-bold">$10</span><span className="text-muted-foreground">/usr</span>
+              </div>
+              <ul className="space-y-3 mb-8 flex-1">
+                {["Shared workspaces", "Group sessions", "Team analytics", "SSO + Custom branding", "Priority support"].map((f, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" /> {f}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/auth" className="mt-auto">
+                <Button className="w-full rounded-xl h-11 transition-all">Upgrade to Studio</Button>
               </Link>
             </div>
           </div>
@@ -365,15 +424,15 @@ export default function LandingPage() {
 
       {/* CTA Layer */}
       <section className="py-24 px-4 relative">
-        <div className="max-w-5xl mx-auto rounded-[3rem] bg-primary text-primary-foreground text-center p-12 sm:p-24 relative overflow-hidden shadow-2xl">
-          <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent" />
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        <div className="max-w-5xl mx-auto rounded-[3rem] bg-background/40 backdrop-blur-3xl border border-white/10 dark:border-white/5 text-foreground text-center p-12 sm:p-24 relative overflow-hidden shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent pointer-events-none" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
           <div className="relative z-10 space-y-8">
             <h2 className="text-5xl sm:text-7xl font-bold font-mono tracking-tighter">Your time is yours again.</h2>
-            <p className="text-xl sm:text-2xl font-light opacity-90">Jump right into the workspace. No installations required.</p>
+            <p className="text-xl sm:text-2xl font-light opacity-90 text-muted-foreground">Jump right into the workspace. No installations required.</p>
             <div className="pt-8">
               <Link href="/app">
-                <Button size="lg" variant="secondary" className="h-16 px-12 rounded-full text-lg font-bold text-primary hover:scale-105 transition-transform shadow-2xl">
+                <Button size="lg" className="h-16 px-12 rounded-full text-lg font-bold hover:scale-105 transition-transform shadow-2xl">
                   Enter Workspace <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
               </Link>
