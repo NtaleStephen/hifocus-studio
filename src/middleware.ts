@@ -71,19 +71,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // --- For protected routes, check if user has a Supabase session cookie ---
-  // Supabase stores session tokens in cookies that follow the pattern:
-  // sb-<project-ref>-auth-token
-  const hasAuthCookie = request.cookies
-    .getAll()
-    .some((cookie) => cookie.name.includes("auth-token"));
-
-  if (!hasAuthCookie && pathname.startsWith("/app")) {
-    const loginUrl = new URL("/auth", request.url);
-    loginUrl.searchParams.set("next", pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
   return NextResponse.next();
 }
 
