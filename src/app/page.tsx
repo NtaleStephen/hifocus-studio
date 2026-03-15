@@ -4,7 +4,8 @@ import { useRef, useEffect, useState } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Target, Sparkles, Brain, Zap, Maximize } from "lucide-react";
+import { useTheme } from "next-themes";
+import { ArrowRight, Target, Sparkles, Brain, Zap, Maximize, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const FlipCardAnimation = ({ value }: { value: string }) => {
@@ -37,8 +38,11 @@ export default function LandingPage() {
   const clockY = useTransform(scrollYProgress, [0, 0.4], [0, -100]);
 
   const [time, setTime] = useState(new Date());
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const interval = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
@@ -54,11 +58,22 @@ export default function LandingPage() {
           <Image src="/logo.png" alt="Hifocus Logo" width={32} height={32} className="rounded" />
           <span className="font-mono font-bold text-xl tracking-tighter">HIFOCUS</span>
         </div>
-        <Link href="/app">
-          <Button className="rounded-full px-6 gap-2 font-semibold shadow-[0_0_20px_rgba(234,179,8,0.3)] hover:shadow-[0_0_30px_rgba(234,179,8,0.5)] transition-all">
-            Enter Workspace <ArrowRight className="h-4 w-4" />
-          </Button>
-        </Link>
+        <div className="flex items-center gap-4">
+          {mounted && (
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="p-2 rounded-full bg-secondary/50 hover:bg-secondary border border-border/50 transition-colors"
+              title="Toggle theme"
+            >
+              {theme === "dark" ? <Sun className="h-5 w-5 text-muted-foreground" /> : <Moon className="h-5 w-5 text-muted-foreground" />}
+            </button>
+          )}
+          <Link href="/app">
+            <Button className="rounded-full px-6 gap-2 font-semibold shadow-[0_0_20px_rgba(234,179,8,0.3)] hover:shadow-[0_0_30px_rgba(234,179,8,0.5)] transition-all">
+              Enter Workspace <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
       </nav>
 
       {/* Hero Section */}

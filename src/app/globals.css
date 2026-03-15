@@ -6,6 +6,56 @@
 
 @layer base {
   :root {
+    /* LIGHT MODE (Cream/Beige with Brown/Orange accents) */
+    --background: 40 33% 96%; /* Soft cream */
+    --foreground: 30 10% 15%; /* Dark brownish-gray */
+
+    --card: 40 30% 98%;
+    --card-foreground: 30 10% 15%;
+
+    --popover: 40 30% 98%;
+    --popover-foreground: 30 10% 15%;
+
+    --primary: 36 90% 55%; /* Orange/Brown accent */
+    --primary-foreground: 0 0% 98%; /* White text on primary */
+
+    --secondary: 40 20% 90%;
+    --secondary-foreground: 30 15% 30%;
+
+    --muted: 40 15% 85%;
+    --muted-foreground: 30 10% 45%;
+
+    --accent: 36 90% 55%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 40 20% 85%;
+    --input: 40 20% 85%;
+    --ring: 36 90% 55%;
+
+    --radius: 0.75rem;
+
+    /* Custom tokens */
+    --digit-bg: 40 30% 98%; /* White/cream cards */
+    --digit-fg: 30 10% 15%;
+    --digit-divider: 40 20% 85%;
+    --nav-bg: 40 33% 96% / 0.85; /* Soft transparent cream */
+    --glow: 36 90% 55% / 0.15;
+
+    --sidebar-background: 40 30% 98%;
+    --sidebar-foreground: 30 10% 15%;
+    --sidebar-primary: 36 90% 55%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 40 20% 90%;
+    --sidebar-accent-foreground: 30 15% 30%;
+    --sidebar-border: 40 20% 85%;
+    --sidebar-ring: 36 90% 55%;
+  }
+
+  .dark {
+    /* EXISTING DARK MODE (Dark Brown/Black) */
     --background: 0 0% 4%;
     --foreground: 0 0% 95%;
 

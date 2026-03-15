@@ -4,7 +4,8 @@ import { themes } from "@/lib/themes";
 import { soundOptions, previewSound } from "@/lib/sounds";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { X, Volume2 } from "lucide-react";
+import { X, Volume2, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
 
 interface SettingsPanelProps {
   open: boolean;
@@ -13,6 +14,7 @@ interface SettingsPanelProps {
 
 const SettingsPanel = ({ open, onClose }: SettingsPanelProps) => {
   const { settings, updateSettings } = useSettings();
+  const { theme, setTheme } = useTheme();
 
   if (!open) return null;
 
@@ -44,9 +46,17 @@ const SettingsPanel = ({ open, onClose }: SettingsPanelProps) => {
             </SettingRow>
           </section>
 
-          {/* Theme */}
+          {/* Appearance */}
           <section className="space-y-4">
-            <h3 className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Theme</h3>
+            <h3 className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Appearance</h3>
+            <SettingRow label="Dark Mode">
+              <Switch checked={theme === "dark"} onCheckedChange={(v) => setTheme(v ? "dark" : "light")} />
+            </SettingRow>
+          </section>
+
+          {/* Accent Color */}
+          <section className="space-y-4">
+            <h3 className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Accent Color</h3>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
               {themes.map((t) => (
                 <button
