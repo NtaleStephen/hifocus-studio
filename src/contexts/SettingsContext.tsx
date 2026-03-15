@@ -36,8 +36,25 @@ export const useSettings = () => {
 };
 
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
-  const [settings, setSettings] = useState<Settings>(defaultSettings);
+  const [settings, setSettings] = useState<Settings>(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("hifocus-settings");
+      if (stored) {
+        try {
+          return { ...defaultSettings, ...JSON.parse(stored) };
+        } catch (e) {}
+      }
+    }
+    return defaultSettings;
+  });
+  
   const { session } = useAuth();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("hifocus-settings", JSON.stringify(settings));
+    }
+  }, [settings]);
 
   useEffect(() => {
     const load = async () => {

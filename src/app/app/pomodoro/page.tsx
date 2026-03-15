@@ -103,7 +103,7 @@ const PomodoroContent = () => {
         <FlipCard value={s[1]} />
       </div>
 
-      <div className="flex flex-col items-center gap-6">
+      <div className="flex flex-col items-center gap-6 idle-fade">
         <div className="flex items-center gap-4 bg-secondary/50 rounded-full px-4 py-2 border border-border">
           <Button variant="ghost" size="icon" onClick={() => adjustDuration(-5)} disabled={isRunning}>
             <Minus className="h-4 w-4" />

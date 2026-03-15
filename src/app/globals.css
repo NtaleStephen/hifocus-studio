@@ -154,3 +154,18 @@
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
 }
+
+/* Base fade transitions for UI that can be hidden */
+nav,
+footer,
+.idle-fade {
+  transition: opacity 0.5s ease-in-out;
+}
+
+/* Hide UI elements when idle mode is active wrapper */
+.idle-mode nav,
+.idle-mode footer,
+.idle-mode .idle-fade {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
