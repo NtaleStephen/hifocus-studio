@@ -8,9 +8,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Check, CreditCard, Sparkles, Building2, Zap } from "lucide-react";
 import { STRIPE_PLANS } from "@/lib/stripe-plans";
+import { useFullscreen } from "@/hooks/useFullscreen";
 
 export default function BillingPage() {
   const { session } = useAuth();
+  const toggleFullscreen = useFullscreen();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [currentPlan, setCurrentPlan] = useState<string>("seedling");
   const [loading, setLoading] = useState(false);
@@ -122,7 +124,7 @@ export default function BillingPage() {
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-background">
-      <NavBar onSettingsClick={() => setSettingsOpen(true)} onFullscreen={() => {}} />
+      <NavBar onSettingsClick={() => setSettingsOpen(true)} onFullscreen={toggleFullscreen} />
       <main className="flex flex-1 w-full max-w-6xl flex-col gap-12 px-4 py-20">
         <section className="text-center space-y-4">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">

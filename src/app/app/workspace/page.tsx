@@ -23,6 +23,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useFullscreen } from "@/hooks/useFullscreen";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -291,6 +292,7 @@ function WorkspaceDetailPanel({
 export default function WorkspacePage() {
   const { session } = useAuth();
   const { workspaces, activeWorkspace, setActiveWorkspace, loading, refresh } = useWorkspace();
+  const toggleFullscreen = useFullscreen();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
@@ -330,7 +332,7 @@ export default function WorkspacePage() {
       <div className="relative flex min-h-screen flex-col bg-background">
         <NavBar
           onSettingsClick={() => setSettingsOpen(true)}
-          onFullscreen={() => {}}
+          onFullscreen={toggleFullscreen}
         />
         <main className="flex flex-1 w-full max-w-3xl mx-auto flex-col gap-8 px-4 py-20">
           <WorkspaceDetailPanel

@@ -6,6 +6,9 @@ import { Footer } from "@/components/Footer";
 import SettingsPanel from "@/components/SettingsPanel";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useFullscreen } from "@/hooks/useFullscreen";
+import { toast } from "sonner";
 import {
   ResponsiveContainer,
   BarChart,
@@ -58,9 +61,18 @@ const COLORS = [
 export default function ReportsPage() {
   const { session } = useAuth();
   const { activeWorkspace } = useWorkspace();
+  const { plan } = useSubscription();
+  const toggleFullscreen = useFullscreen();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [summary, setSummary] = useState<SummaryResponse | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Window label matches the server-side history window per plan.
+  const windowLabel =
+    plan === "seedling" ? "last 7 days"
+    : plan === "flow"   ? "last 30 days"
+    : "all time";
+  const canExport = plan === "deep-work" || plan === "studio";
 
   useEffect(() => {
     if (!session) return;
@@ -91,7 +103,14 @@ export default function ReportsPage() {
         Authorization: `Bearer ${session.access_token}`,
       },
     });
-    if (!res.ok) return;
+    if (res.status === 402) {
+      toast.error("CSV export requires a Deep Work or Studio plan.");
+      return;
+    }
+    if (!res.ok) {
+      toast.error("Failed to export report.");
+      return;
+    }
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -107,15 +126,7 @@ export default function ReportsPage() {
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-background">
       <NavBar
         onSettingsClick={() => setSettingsOpen(true)}
-        onFullscreen={() => {
-          if (typeof document !== "undefined") {
-            if (!document.fullscreenElement) {
-              document.documentElement.requestFullscreen();
-            } else {
-              document.exitFullscreen();
-            }
-          }
-        }}
+        onFullscreen={toggleFullscreen}
       />
       <main className="flex flex-1 w-full max-w-5xl flex-col gap-8 px-4 py-10">
         <section className="flex items-center justify-between gap-4">
@@ -127,7 +138,12 @@ export default function ReportsPage() {
               See how your time is distributed across days and projects.
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={exportCsv}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={exportCsv}
+            title={canExport ? "Download your sessions as CSV" : "Requires Deep Work or Studio"}
+          >
             Export CSV
           </Button>
         </section>
@@ -141,7 +157,7 @@ export default function ReportsPage() {
             <section className="grid gap-4 sm:grid-cols-3">
               <div className="rounded-lg border bg-card p-4">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                  Total focus (last 30 days)
+                  Total focus ({windowLabel})
                 </p>
                 <p className="mt-2 text-2xl font-semibold">
                   {summary.totalHours.toFixed(1)}h

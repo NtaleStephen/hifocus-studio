@@ -4,20 +4,12 @@ import FlipClock from "@/components/FlipClock";
 import NavBar from "@/components/NavBar";
 import SettingsPanel from "@/components/SettingsPanel";
 import { Footer } from "@/components/Footer";
-import { useState, useCallback } from "react";
+import { useState } from "react";
+import { useFullscreen } from "@/hooks/useFullscreen";
 
 export default function Home() {
   const [settingsOpen, setSettingsOpen] = useState(false);
-
-  const toggleFullscreen = useCallback(() => {
-    if (typeof document !== "undefined") {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      } else {
-        document.exitFullscreen();
-      }
-    }
-  }, []);
+  const toggleFullscreen = useFullscreen();
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-background">

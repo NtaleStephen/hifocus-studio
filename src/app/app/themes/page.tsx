@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import NavBar from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
 import SettingsPanel from "@/components/SettingsPanel";
 import { useSettings } from "@/contexts/SettingsContext";
 import { themes } from "@/lib/themes";
 import type { ThemeConfig } from "@/lib/themes";
+import { useFullscreen } from "@/hooks/useFullscreen";
 
 const ThemesContent = () => {
   const { settings, updateSettings } = useSettings();
@@ -115,16 +116,7 @@ const ThemeCard = ({
 
 export default function ThemesPage() {
   const [settingsOpen, setSettingsOpen] = useState(false);
-
-  const toggleFullscreen = useCallback(() => {
-    if (typeof document !== "undefined") {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      } else {
-        document.exitFullscreen();
-      }
-    }
-  }, []);
+  const toggleFullscreen = useFullscreen();
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-background">

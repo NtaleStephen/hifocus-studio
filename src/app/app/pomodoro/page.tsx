@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTaskSelection } from "@/contexts/TaskContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
+import { useFullscreen } from "@/hooks/useFullscreen";
 
 const PomodoroContent = () => {
   const { user, session } = useAuth();
@@ -135,16 +136,7 @@ const PomodoroContent = () => {
 
 export default function PomodoroPage() {
   const [settingsOpen, setSettingsOpen] = useState(false);
-
-  const toggleFullscreen = useCallback(() => {
-    if (typeof document !== "undefined") {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      } else {
-        document.exitFullscreen();
-      }
-    }
-  }, []);
+  const toggleFullscreen = useFullscreen();
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-background">

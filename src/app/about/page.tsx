@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import NavBar from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
 import SettingsPanel from "@/components/SettingsPanel";
+import { useFullscreen } from "@/hooks/useFullscreen";
 import { Clock, Palette, Timer, Maximize, Check } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -95,16 +96,7 @@ const AboutContent = () => {
 
 export default function AboutPage() {
   const [settingsOpen, setSettingsOpen] = useState(false);
-
-  const toggleFullscreen = useCallback(() => {
-    if (typeof document !== "undefined") {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      } else {
-        document.exitFullscreen();
-      }
-    }
-  }, []);
+  const toggleFullscreen = useFullscreen();
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-background">

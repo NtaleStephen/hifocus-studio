@@ -10,6 +10,8 @@ import { Play, Pause, RotateCcw, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTaskSelection } from "@/contexts/TaskContext";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
+import { useFullscreen } from "@/hooks/useFullscreen";
 
 const CountdownContent = ({
   initialTime,
@@ -19,6 +21,7 @@ const CountdownContent = ({
   const { user, session } = useAuth();
   const { settings } = useSettings();
   const { selection } = useTaskSelection();
+  const { activeWorkspace } = useWorkspace();
   const [totalSeconds, setTotalSeconds] = useState(0);
   const [remaining, setRemaining] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -49,13 +52,14 @@ const CountdownContent = ({
             type: "countdown",
             projectId: selection.projectId,
             taskId: selection.taskId,
+            workspaceId: activeWorkspace?.id ?? null,
           }),
         });
       } catch (error) {
         console.error("Failed to persist countdown session", error);
       }
     },
-    [user, session, selection.projectId, selection.taskId],
+    [user, session, selection.projectId, selection.taskId, activeWorkspace],
   );
 
   useEffect(() => {
@@ -166,16 +170,7 @@ const CountdownContent = ({
 
 export default function CountdownPage() {
   const [settingsOpen, setSettingsOpen] = useState(false);
-
-  const toggleFullscreen = useCallback(() => {
-    if (typeof document !== "undefined") {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      } else {
-        document.exitFullscreen();
-      }
-    }
-  }, []);
+  const toggleFullscreen = useFullscreen();
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-background">
