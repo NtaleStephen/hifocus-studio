@@ -7,7 +7,7 @@ import SettingsPanel from "@/components/SettingsPanel";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Check, CreditCard, Sparkles, Building2, Zap } from "lucide-react";
-import { STRIPE_PLANS } from "@/lib/stripe-plans";
+import { slugToStripeKey } from "@/lib/stripe-plans";
 import { useFullscreen } from "@/hooks/useFullscreen";
 
 export default function BillingPage() {
@@ -37,7 +37,7 @@ export default function BillingPage() {
     void loadPlan();
   }, [session]);
 
-  const handleSubscribe = async (priceId: string) => {
+  const handleSubscribe = async (planKey: string) => {
     if (!session) return;
     setLoading(true);
     try {
@@ -47,13 +47,15 @@ export default function BillingPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ priceId }),
+        body: JSON.stringify({ plan: planKey }),
       });
       if (res.ok) {
         const { url } = await res.json();
         window.location.href = url;
+      } else {
+        setLoading(false);
       }
-    } finally {
+    } catch {
       setLoading(false);
     }
   };
@@ -94,7 +96,6 @@ export default function BillingPage() {
       name: "Flow",
       price: "$6",
       slug: "flow",
-      priceId: STRIPE_PLANS.FLOW.priceId,
       icon: Zap,
       features: ["Custom intervals", "Unlimited tasks", "Dark mode + 10 themes", "30-day history", "Ambient sounds"],
       label: "Upgrade to Flow",
@@ -104,7 +105,6 @@ export default function BillingPage() {
       name: "Deep Work",
       price: "$14",
       slug: "deep-work",
-      priceId: STRIPE_PLANS.DEEP_WORK.priceId,
       icon: Sparkles,
       features: ["AI focus coach", "Unlimited history", "Custom themes", "Calendar + Slack sync", "Floating widget"],
       label: "Upgrade to Deep Work",
@@ -114,7 +114,6 @@ export default function BillingPage() {
       name: "Studio",
       price: "$10/user",
       slug: "studio",
-      priceId: STRIPE_PLANS.STUDIO.priceId,
       icon: Building2,
       features: ["Shared workspaces", "Group sessions", "Team analytics", "SSO + Custom branding", "Priority support"],
       label: "Upgrade to Studio",
@@ -187,7 +186,10 @@ export default function BillingPage() {
                 variant={plan.variant}
                 className="w-full rounded-xl h-11"
                 disabled={isCurrent || loading}
-                onClick={() => plan.priceId && handleSubscribe(plan.priceId)}
+                onClick={() => {
+                  const key = slugToStripeKey(plan.slug);
+                  if (key) handleSubscribe(key);
+                }}
               >
                 {loading ? "Processing..." : isCurrent ? "Current Plan" : plan.label}
               </Button>

@@ -126,5 +126,7 @@ export const changeRoleSchema = z.object({
 // ─── Billing ────────────────────────────────────────────────────────────────
 
 export const checkoutSchema = z.object({
-  priceId: z.string().min(1, "Price ID is required"),
+  plan: z.enum(["FLOW", "DEEP_WORK", "STUDIO"], {
+    errorMap: () => ({ message: "Invalid plan" }),
+  }),
 });

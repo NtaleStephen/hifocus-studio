@@ -48,3 +48,16 @@ export function priceIdToPlan(priceId: string | null | undefined): PrismaPlan | 
 export function isPrismaPlan(value: string | null | undefined): value is PrismaPlan {
   return value === "SEEDLING" || value === "FLOW" || value === "DEEP_WORK" || value === "STUDIO";
 }
+
+/** The paid plan keys that map to a Stripe price. */
+export type PaidPlanKey = keyof typeof STRIPE_PLANS; // "FLOW" | "DEEP_WORK" | "STUDIO"
+
+/** Map a lowercase plan slug ("flow", "deep-work", …) to its Stripe plan key. */
+export function slugToStripeKey(slug: string): PaidPlanKey | null {
+  switch (slug) {
+    case "flow":      return "FLOW";
+    case "deep-work": return "DEEP_WORK";
+    case "studio":    return "STUDIO";
+    default:          return null;
+  }
+}

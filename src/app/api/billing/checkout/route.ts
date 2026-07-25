@@ -23,15 +23,17 @@ export async function POST(req: Request) {
       );
     }
 
-    const { priceId } = parsed.data;
+    const { plan: planKey } = parsed.data;
 
-    // Identify which plan this is
-    const planKey = Object.keys(STRIPE_PLANS).find(
-      (key) => STRIPE_PLANS[key as keyof typeof STRIPE_PLANS].priceId === priceId
-    );
-
-    if (!planKey) {
-      return NextResponse.json({ error: "Invalid Price ID" }, { status: 400 });
+    // Resolve the real Stripe price ID server-side (env vars aren't exposed to
+    // the client, so the client sends a plan key rather than a price ID).
+    const priceId = STRIPE_PLANS[planKey].priceId;
+    if (!priceId || priceId.startsWith("price_placeholder")) {
+      console.error(`[POST /api/billing/checkout] price ID not configured for plan ${planKey}`);
+      return NextResponse.json(
+        { error: "This plan is not available yet. Please try again later." },
+        { status: 400 },
+      );
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
