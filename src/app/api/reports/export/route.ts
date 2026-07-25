@@ -1,34 +1,25 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { createClient } from "@supabase/supabase-js";
+import { getUserAndSync } from "@/lib/auth-server";
+import { canAccess, planFromPrisma } from "@/lib/features";
 import { sanitizeForCsv } from "@/lib/validations";
-
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
-
-async function getUserFromRequest(req: Request) {
-  const authHeader = req.headers.get("authorization") ?? "";
-  const [, token] = authHeader.split(" ");
-
-  if (!token) {
-    return null;
-  }
-
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-  const { data, error } = await supabase.auth.getUser(token);
-
-  if (error || !data.user) {
-    return null;
-  }
-
-  return data.user;
-}
 
 export async function GET(req: Request) {
   try {
-    const user = await getUserFromRequest(req);
-    if (!user) {
+    const authResult = await getUserAndSync(req);
+    if (!authResult) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { user } = authResult;
+
+    // Report export is a paid feature (Deep Work / Studio). Gate at the API
+    // layer — the UI hides it, but the endpoint must enforce it too.
+    if (!canAccess(planFromPrisma(user.plan), "export-reports")) {
+      return NextResponse.json(
+        { error: "Report export requires a Deep Work or Studio plan." },
+        { status: 402 },
+      );
     }
 
     const url = new URL(req.url);

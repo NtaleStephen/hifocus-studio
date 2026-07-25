@@ -98,3 +98,13 @@ export function canAccess(plan: Plan, feature: FeatureKey): boolean {
   return allowedPlans.includes(plan);
 }
 
+/** Map a Prisma `Plan` enum value ("FLOW", "DEEP_WORK", …) to the Plan slug. */
+export function planFromPrisma(prismaPlan: string): Plan {
+  switch (prismaPlan) {
+    case "FLOW":      return "flow";
+    case "DEEP_WORK": return "deep-work";
+    case "STUDIO":    return "studio";
+    default:          return "seedling";
+  }
+}
+

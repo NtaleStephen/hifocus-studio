@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getUserAndSync } from "@/lib/auth-server";
 import { createProjectSchema, deleteProjectSchema } from "@/lib/validations";
+import { isWorkspaceMember } from "@/lib/ownership";
 
 export async function GET(req: Request) {
   try {
@@ -51,6 +52,11 @@ export async function POST(req: Request) {
     }
 
     const { name, color, workspaceId } = parsed.data;
+
+    // Ensure the caller belongs to the workspace they're creating in (prevents IDOR).
+    if (workspaceId && !(await isWorkspaceMember(user.id, workspaceId))) {
+      return NextResponse.json({ error: "Not a member of this workspace" }, { status: 403 });
+    }
 
     const project = await prisma.project.create({
       data: {

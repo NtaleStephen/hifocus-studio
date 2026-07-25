@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { getUserAndSync } from "@/lib/auth-server";
 import { FEATURE_GATES, type Plan } from "@/lib/features";
 import { createTaskSchema, patchTaskSchema, deleteTaskSchema } from "@/lib/validations";
+import { isWorkspaceMember, ownsProject } from "@/lib/ownership";
 
 export async function GET(req: Request) {
   try {
@@ -52,6 +53,14 @@ export async function POST(req: Request) {
     }
 
     const { name, projectId, workspaceId } = parsed.data;
+
+    // Ensure the caller may reference each provided foreign key (prevents IDOR).
+    if (workspaceId && !(await isWorkspaceMember(dbUser.id, workspaceId))) {
+      return NextResponse.json({ error: "Not a member of this workspace" }, { status: 403 });
+    }
+    if (projectId && !(await ownsProject(dbUser.id, projectId))) {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    }
 
     let plan: Plan = "seedling";
     if (dbUser) {
