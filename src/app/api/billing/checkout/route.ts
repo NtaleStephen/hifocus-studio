@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { getUserAndSync } from "@/lib/auth-server";
 import { STRIPE_PLANS } from "@/lib/stripe-plans";
+import { getOrCreateStripeCustomer } from "@/lib/stripe-customers";
 import { checkoutSchema } from "@/lib/validations";
 
 export async function POST(req: Request) {
@@ -42,8 +43,13 @@ export async function POST(req: Request) {
       );
     }
 
+    // Attach a persistent Stripe customer so the subscription lifecycle
+    // (renewals, downgrades, cancellations) can be reconciled by webhooks.
+    const customerId = await getOrCreateStripeCustomer(user.id, user.email);
+
     const session = await stripe.checkout.sessions.create({
-      customer_email: user.email,
+      customer: customerId,
+      client_reference_id: user.id,
       line_items: [
         {
           price: priceId,
@@ -56,6 +62,14 @@ export async function POST(req: Request) {
       metadata: {
         userId: user.id,
         plan: planKey,
+      },
+      // Propagate identifiers to the Subscription so subscription.* webhook
+      // events can be tied back to the user without a metadata round-trip.
+      subscription_data: {
+        metadata: {
+          userId: user.id,
+          plan: planKey,
+        },
       },
     });
 

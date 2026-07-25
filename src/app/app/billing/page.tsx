@@ -76,48 +76,46 @@ export default function BillingPage() {
     }
   };
 
+  // `slug` matches the plan format returned by GET /api/subscription
+  // ("seedling" | "flow" | "deep-work" | "studio").
   const plans = [
     {
       name: "Seedling",
       price: "Free",
-      id: "seedling",
+      slug: "seedling",
       icon: Sparkles,
       features: ["Fixed Pomodoro", "5 active tasks", "3 default themes", "7-day history"],
-      buttonText: "Current Plan",
-      disabled: currentPlan === "seedling",
+      label: "Current Plan",
       variant: "outline" as const,
     },
     {
       name: "Flow",
       price: "$6",
-      id: "FLOW",
+      slug: "flow",
       priceId: STRIPE_PLANS.FLOW.priceId,
       icon: Zap,
       features: ["Custom intervals", "Unlimited tasks", "Dark mode + 10 themes", "30-day history", "Ambient sounds"],
-      buttonText: currentPlan === "flow" ? "Current Plan" : "Upgrade to Flow",
-      disabled: currentPlan === "flow",
+      label: "Upgrade to Flow",
       variant: "default" as const,
     },
     {
       name: "Deep Work",
       price: "$14",
-      id: "DEEP_WORK",
+      slug: "deep-work",
       priceId: STRIPE_PLANS.DEEP_WORK.priceId,
       icon: Sparkles,
       features: ["AI focus coach", "Unlimited history", "Custom themes", "Calendar + Slack sync", "Floating widget"],
-      buttonText: currentPlan === "deep_work" ? "Current Plan" : "Upgrade to Deep Work",
-      disabled: currentPlan === "deep_work",
+      label: "Upgrade to Deep Work",
       variant: "default" as const,
     },
     {
       name: "Studio",
       price: "$10/user",
-      id: "STUDIO",
+      slug: "studio",
       priceId: STRIPE_PLANS.STUDIO.priceId,
       icon: Building2,
       features: ["Shared workspaces", "Group sessions", "Team analytics", "SSO + Custom branding", "Priority support"],
-      buttonText: currentPlan === "studio" ? "Current Plan" : "Upgrade to Studio",
-      disabled: currentPlan === "studio",
+      label: "Upgrade to Studio",
       variant: "default" as const,
     },
   ];
@@ -153,11 +151,13 @@ export default function BillingPage() {
         )}
 
         <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {plans.map((plan) => (
+          {plans.map((plan) => {
+            const isCurrent = currentPlan === plan.slug;
+            return (
             <div
               key={plan.name}
               className={`relative flex flex-col p-6 rounded-2xl border bg-card/50 backdrop-blur-sm transition-all hover:shadow-xl hover:-translate-y-1 ${
-                currentPlan.toLowerCase() === plan.id.toLowerCase() ? "border-primary ring-1 ring-primary" : "border-border"
+                isCurrent ? "border-primary ring-1 ring-primary" : "border-border"
               }`}
             >
               <div className="flex items-center gap-3 mb-4">
@@ -184,13 +184,14 @@ export default function BillingPage() {
               <Button
                 variant={plan.variant}
                 className="w-full rounded-xl h-11"
-                disabled={plan.disabled || loading}
+                disabled={isCurrent || loading}
                 onClick={() => plan.priceId && handleSubscribe(plan.priceId)}
               >
-                {loading ? "Processing..." : plan.buttonText}
+                {loading ? "Processing..." : isCurrent ? "Current Plan" : plan.label}
               </Button>
             </div>
-          ))}
+            );
+          })}
         </section>
       </main>
       <Footer />
