@@ -108,3 +108,40 @@ export function planFromPrisma(prismaPlan: string): Plan {
   }
 }
 
+// ─── Plan tiers (ascending) ──────────────────────────────────────────────────
+
+export const PLAN_ORDER: Plan[] = ["seedling", "flow", "deep-work", "studio"];
+
+export const PLAN_LABELS: Record<Plan, string> = {
+  seedling: "Seedling",
+  flow: "Flow",
+  "deep-work": "Deep Work",
+  studio: "Studio",
+};
+
+/** The lowest-tier plan that unlocks a feature. */
+export function minPlanFor(feature: FeatureKey): Plan {
+  const allowed = FEATURE_GATES[feature];
+  for (const p of PLAN_ORDER) {
+    if (allowed.includes(p)) return p;
+  }
+  return "studio";
+}
+
+/** Is `plan` at least as high a tier as `min`? */
+export function planAtLeast(plan: Plan, min: Plan): boolean {
+  return PLAN_ORDER.indexOf(plan) >= PLAN_ORDER.indexOf(min);
+}
+
+/** Human-readable names for gated features, shown in the upgrade prompt. */
+export const FEATURE_LABELS: Partial<Record<FeatureKey, string>> = {
+  "custom-intervals": "Custom timer intervals",
+  "premium-themes": "Premium themes",
+  "unlimited-themes": "Unlimited themes",
+  "unlimited-tasks": "Unlimited tasks",
+  "export-reports": "Report export",
+  "team-workspace": "Team workspaces",
+  "ambient-sounds": "Ambient sounds",
+  "analytics-dashboard-unlimited": "Unlimited analytics history",
+};
+

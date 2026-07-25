@@ -5,12 +5,25 @@ import NavBar from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
 import SettingsPanel from "@/components/SettingsPanel";
 import { useSettings } from "@/contexts/SettingsContext";
-import { themes } from "@/lib/themes";
+import { themes, isThemeFree } from "@/lib/themes";
 import type { ThemeConfig } from "@/lib/themes";
 import { useFullscreen } from "@/hooks/useFullscreen";
+import { useUpgrade } from "@/contexts/UpgradeContext";
+import { canAccess } from "@/lib/features";
+import { Lock } from "lucide-react";
 
 const ThemesContent = () => {
   const { settings, updateSettings } = useSettings();
+  const { plan, requireFeature } = useUpgrade();
+  const canUsePremium = canAccess(plan, "premium-themes");
+
+  const selectTheme = (t: ThemeConfig) => {
+    if (!isThemeFree(t.id) && !canUsePremium) {
+      requireFeature("premium-themes");
+      return;
+    }
+    updateSettings({ theme: t.id });
+  };
 
   return (
     <div className="w-full max-w-4xl mx-auto py-8 px-4 animate-fade-in">
@@ -23,7 +36,8 @@ const ThemesContent = () => {
             key={t.id}
             theme={t}
             active={settings.theme === t.id}
-            onSelect={() => updateSettings({ theme: t.id })}
+            locked={!isThemeFree(t.id) && !canUsePremium}
+            onSelect={() => selectTheme(t)}
           />
         ))}
       </div>
@@ -34,10 +48,12 @@ const ThemesContent = () => {
 const ThemeCard = ({
   theme,
   active,
+  locked,
   onSelect,
 }: {
   theme: ThemeConfig;
   active: boolean;
+  locked: boolean;
   onSelect: () => void;
 }) => {
   const bg = theme.swatches[0];
@@ -51,6 +67,12 @@ const ThemeCard = ({
         active ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-muted-foreground/30"
       }`}
     >
+      {locked && (
+        <span className="absolute right-2 top-2 z-10 flex items-center gap-1 rounded-full bg-background/90 px-2 py-0.5 text-[10px] font-medium text-muted-foreground backdrop-blur">
+          <Lock className="h-2.5 w-2.5" />
+          Flow
+        </span>
+      )}
       <div
         className="relative mb-3 flex items-center justify-center gap-2 rounded-xl p-6 overflow-hidden"
         style={{ backgroundColor: bg }}

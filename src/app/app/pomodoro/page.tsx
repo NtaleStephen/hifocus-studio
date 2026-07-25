@@ -13,12 +13,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useTaskSelection } from "@/contexts/TaskContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { useFullscreen } from "@/hooks/useFullscreen";
+import { useUpgrade } from "@/contexts/UpgradeContext";
 
 const PomodoroContent = () => {
   const { user, session } = useAuth();
   const { settings } = useSettings();
   const { selection } = useTaskSelection();
   const { activeWorkspace } = useWorkspace();
+  const { requireFeature } = useUpgrade();
   const [duration, setDuration] = useState(25);
   const [remaining, setRemaining] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
@@ -86,6 +88,8 @@ const PomodoroContent = () => {
   };
 
   const adjustDuration = (delta: number) => {
+    // Custom intervals are a Flow feature; free users stay on the fixed 25 min.
+    if (!requireFeature("custom-intervals")) return;
     const next = Math.max(1, Math.min(120, duration + delta));
     setDuration(next);
     if (!isRunning) setRemaining(next * 60);

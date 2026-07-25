@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useFullscreen } from "@/hooks/useFullscreen";
+import { useUpgrade } from "@/contexts/UpgradeContext";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -31,6 +32,7 @@ export default function TasksPage() {
   const { session } = useAuth();
   const { selection, setSelection } = useTaskSelection();
   const { activeWorkspace } = useWorkspace();
+  const { showUpgrade } = useUpgrade();
   const toggleFullscreen = useFullscreen();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
@@ -112,6 +114,8 @@ export default function TasksPage() {
         const data = (await res.json()) as { task: Task };
         setTasks((prev) => [...prev, data.task]);
         setTaskName("");
+      } else if (res.status === 402) {
+        showUpgrade("unlimited-tasks");
       }
     } catch {
       // ignore

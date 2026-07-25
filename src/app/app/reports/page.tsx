@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useFullscreen } from "@/hooks/useFullscreen";
+import { useUpgrade } from "@/contexts/UpgradeContext";
 import { toast } from "sonner";
 import {
   ResponsiveContainer,
@@ -62,6 +63,7 @@ export default function ReportsPage() {
   const { session } = useAuth();
   const { activeWorkspace } = useWorkspace();
   const { plan } = useSubscription();
+  const { showUpgrade } = useUpgrade();
   const toggleFullscreen = useFullscreen();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [summary, setSummary] = useState<SummaryResponse | null>(null);
@@ -98,13 +100,18 @@ export default function ReportsPage() {
 
   const exportCsv = async () => {
     if (!session) return;
+    // Fast path: don't even hit the API if the plan can't export — just prompt.
+    if (!canExport) {
+      showUpgrade("export-reports");
+      return;
+    }
     const res = await fetch("/api/reports/export?days=90", {
       headers: {
         Authorization: `Bearer ${session.access_token}`,
       },
     });
     if (res.status === 402) {
-      toast.error("CSV export requires a Deep Work or Studio plan.");
+      showUpgrade("export-reports");
       return;
     }
     if (!res.ok) {

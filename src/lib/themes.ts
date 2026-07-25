@@ -243,3 +243,10 @@ export const themes: ThemeConfig[] = [
 
 export const getTheme = (id: ThemeId): ThemeConfig =>
   themes.find((t) => t.id === id) ?? themes[0];
+
+// The three themes available on the free (Seedling) plan. The rest require a
+// paid plan (premium-themes feature). Kept here so both the Themes page and the
+// Settings panel gate consistently.
+export const FREE_THEME_IDS: ThemeId[] = ["midnight", "espresso", "denim"];
+
+export const isThemeFree = (id: ThemeId): boolean => FREE_THEME_IDS.includes(id);

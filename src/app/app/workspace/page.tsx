@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useFullscreen } from "@/hooks/useFullscreen";
+import { useUpgrade } from "@/contexts/UpgradeContext";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -292,6 +293,7 @@ function WorkspaceDetailPanel({
 export default function WorkspacePage() {
   const { session } = useAuth();
   const { workspaces, activeWorkspace, setActiveWorkspace, loading, refresh } = useWorkspace();
+  const { showUpgrade } = useUpgrade();
   const toggleFullscreen = useFullscreen();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -319,6 +321,9 @@ export default function WorkspacePage() {
         await refresh();
         setActiveWorkspace(data.workspace);
         setSelectedId(data.workspace.id);
+      } else if (res.status === 402) {
+        setCreating(false);
+        showUpgrade("team-workspace");
       } else {
         toast.error(data.error ?? "Failed to create workspace.");
       }

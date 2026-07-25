@@ -1,10 +1,12 @@
 "use client";
 import { useSettings } from "@/contexts/SettingsContext";
-import { themes } from "@/lib/themes";
+import { themes, isThemeFree } from "@/lib/themes";
 import { soundOptions, previewSound } from "@/lib/sounds";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { X, Volume2, Moon, Sun } from "lucide-react";
+import { X, Volume2, Lock } from "lucide-react";
+import { useUpgrade } from "@/contexts/UpgradeContext";
+import { canAccess } from "@/lib/features";
 import { useTheme } from "next-themes";
 
 interface SettingsPanelProps {
@@ -15,6 +17,16 @@ interface SettingsPanelProps {
 const SettingsPanel = ({ open, onClose }: SettingsPanelProps) => {
   const { settings, updateSettings } = useSettings();
   const { theme, setTheme } = useTheme();
+  const { plan, requireFeature } = useUpgrade();
+  const canUsePremium = canAccess(plan, "premium-themes");
+
+  const selectTheme = (id: (typeof themes)[number]["id"]) => {
+    if (!isThemeFree(id) && !canUsePremium) {
+      requireFeature("premium-themes");
+      return;
+    }
+    updateSettings({ theme: id });
+  };
 
   if (!open) return null;
 
@@ -58,14 +70,21 @@ const SettingsPanel = ({ open, onClose }: SettingsPanelProps) => {
           <section className="space-y-4">
             <h3 className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Accent Color</h3>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-              {themes.map((t) => (
+              {themes.map((t) => {
+                const locked = !isThemeFree(t.id) && !canUsePremium;
+                return (
                 <button
                   key={t.id}
-                  onClick={() => updateSettings({ theme: t.id })}
-                  className={`flex flex-col items-center gap-2 rounded-xl border-2 p-3 transition-all ${
+                  onClick={() => selectTheme(t.id)}
+                  className={`relative flex flex-col items-center gap-2 rounded-xl border-2 p-3 transition-all ${
                     settings.theme === t.id ? "border-primary" : "border-transparent hover:border-border"
                   }`}
                 >
+                  {locked && (
+                    <span className="absolute right-1 top-1 rounded-full bg-background/90 p-0.5 text-muted-foreground backdrop-blur">
+                      <Lock className="h-2.5 w-2.5" />
+                    </span>
+                  )}
                   <div className="flex gap-0.5">
                     {t.swatches.map((c, i) => (
                       <div
@@ -77,7 +96,8 @@ const SettingsPanel = ({ open, onClose }: SettingsPanelProps) => {
                   </div>
                   <span className="text-[10px] text-muted-foreground leading-tight">{t.label}</span>
                 </button>
-              ))}
+                );
+              })}
             </div>
           </section>
 
