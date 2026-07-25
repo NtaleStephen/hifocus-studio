@@ -13,13 +13,15 @@ export interface Settings {
   hourlyChime: boolean;
 }
 
+// Defaults aligned with the Prisma Settings model defaults so a brand-new
+// user sees no flicker between first client render and the server round-trip.
 const defaultSettings: Settings = {
-  is24Hour: true,
-  showSeconds: true,
+  is24Hour: false,
+  showSeconds: false,
   showDate: true,
   theme: "midnight",
   alertSound: "chime",
-  hourlyChime: true,
+  hourlyChime: false,
 };
 
 interface SettingsContextType {

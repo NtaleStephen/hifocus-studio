@@ -11,7 +11,7 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const run = async () => {
       const code = searchParams.get("code");
-      const next = searchParams.get("next") ?? "/";
+      const next = searchParams.get("next") ?? "/app";
 
       if (!code) {
         router.replace("/auth");

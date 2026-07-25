@@ -27,7 +27,7 @@ const AuthContent = () => {
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        router.push("/");
+        router.push("/app");
       } else {
         const { error } = await supabase.auth.signUp({
           email,
