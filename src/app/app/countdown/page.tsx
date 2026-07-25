@@ -109,21 +109,21 @@ const CountdownContent = ({
 
   return (
     <div className="flex flex-col items-center gap-12 animate-fade-in text-foreground">
-      <div className="flex items-center gap-2 sm:gap-3 md:gap-5">
-        <FlipCard value={h[0]} />
-        <FlipCard value={h[1]} />
-        <div className="flex flex-col gap-4 px-1 sm:gap-5">
-          <div className="h-3 w-3 rounded-full bg-primary/40 animate-pulse-glow" />
-          <div className="h-3 w-3 rounded-full bg-primary/40 animate-pulse-glow" />
+      <div className="flex max-w-full items-center gap-1.5 sm:gap-2 md:gap-3">
+        <FlipCard value={h[0]} size="md" />
+        <FlipCard value={h[1]} size="md" />
+        <div className="flex flex-col gap-3 px-0.5 sm:gap-4 sm:px-1">
+          <div className="h-2.5 w-2.5 rounded-full bg-primary/40 animate-pulse-glow" />
+          <div className="h-2.5 w-2.5 rounded-full bg-primary/40 animate-pulse-glow" />
         </div>
-        <FlipCard value={m[0]} />
-        <FlipCard value={m[1]} />
-        <div className="flex flex-col gap-4 px-1 sm:gap-5">
-          <div className="h-3 w-3 rounded-full bg-primary/40 animate-pulse-glow" />
-          <div className="h-3 w-3 rounded-full bg-primary/40 animate-pulse-glow" />
+        <FlipCard value={m[0]} size="md" />
+        <FlipCard value={m[1]} size="md" />
+        <div className="flex flex-col gap-3 px-0.5 sm:gap-4 sm:px-1">
+          <div className="h-2.5 w-2.5 rounded-full bg-primary/40 animate-pulse-glow" />
+          <div className="h-2.5 w-2.5 rounded-full bg-primary/40 animate-pulse-glow" />
         </div>
-        <FlipCard value={s[0]} />
-        <FlipCard value={s[1]} />
+        <FlipCard value={s[0]} size="md" />
+        <FlipCard value={s[1]} size="md" />
       </div>
 
       <div className="flex flex-col items-center gap-6 idle-fade">
@@ -173,12 +173,12 @@ export default function CountdownPage() {
   const toggleFullscreen = useFullscreen();
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background">
-      <NavBar 
-        onSettingsClick={() => setSettingsOpen(true)} 
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background">
+      <NavBar
+        onSettingsClick={() => setSettingsOpen(true)}
         onFullscreen={toggleFullscreen}
       />
-      <main className="flex flex-1 items-center justify-center px-4 w-full">
+      <main className="flex flex-1 items-center justify-center overflow-x-auto px-4 w-full">
         <CountdownContent />
       </main>
       <Footer />
