@@ -11,11 +11,38 @@ import { slugToStripeKey } from "@/lib/stripe-plans";
 import { useFullscreen } from "@/hooks/useFullscreen";
 
 export default function BillingPage() {
-  const { session } = useAuth();
+  const { session, signOut } = useAuth();
   const toggleFullscreen = useFullscreen();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [currentPlan, setCurrentPlan] = useState<string>("seedling");
   const [loading, setLoading] = useState(false);
+  const [deactivating, setDeactivating] = useState(false);
+
+  const handleDeactivate = async () => {
+    if (!session) return;
+    if (
+      !confirm(
+        "Deactivate your account? You'll be signed out and your workspace will be hidden until you sign back in and reactivate. Your data is kept.",
+      )
+    ) {
+      return;
+    }
+    setDeactivating(true);
+    try {
+      const res = await fetch("/api/account/deactivate", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (res.ok) {
+        await signOut();
+        window.location.href = "/";
+      } else {
+        setDeactivating(false);
+      }
+    } catch {
+      setDeactivating(false);
+    }
+  };
 
   useEffect(() => {
     if (!session) return;
@@ -196,6 +223,26 @@ export default function BillingPage() {
             </div>
             );
           })}
+        </section>
+
+        {/* Danger zone */}
+        <section className="rounded-2xl border border-destructive/30 bg-destructive/[0.03] p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-semibold text-destructive">Deactivate account</h2>
+              <p className="text-sm text-muted-foreground">
+                Hide your account and sign out. Your data is kept — reactivate any time by signing back in.
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              onClick={handleDeactivate}
+              disabled={deactivating}
+            >
+              {deactivating ? "Deactivating…" : "Deactivate account"}
+            </Button>
+          </div>
         </section>
       </main>
       <Footer />

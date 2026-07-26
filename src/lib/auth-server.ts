@@ -4,7 +4,10 @@ import prisma from "./prisma";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
 
-export async function getUserAndSync(req: Request) {
+export async function getUserAndSync(
+  req: Request,
+  opts: { allowDisabled?: boolean } = {},
+) {
   const authHeader = req.headers.get("authorization") ?? "";
   const [, token] = authHeader.split(" ");
 
@@ -32,6 +35,12 @@ export async function getUserAndSync(req: Request) {
       email: authUser.email ?? "",
     },
   });
+
+  // Deactivated accounts are treated as unauthenticated everywhere — except for
+  // endpoints that explicitly opt in (account status / reactivation).
+  if (user.disabledAt && !opts.allowDisabled) {
+    return null;
+  }
 
   return { authUser, user };
 }

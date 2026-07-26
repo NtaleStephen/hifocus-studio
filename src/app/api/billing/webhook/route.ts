@@ -20,18 +20,42 @@ function planForSubscription(subscription: Stripe.Subscription): PrismaPlan {
   return priceIdToPlan(priceId) ?? "SEEDLING";
 }
 
-/** Set a user's plan, keyed by their Stripe customer id. Returns rows updated. */
-async function setPlanByCustomer(customerId: string, plan: PrismaPlan): Promise<number> {
+function customerIdOf(subscription: Stripe.Subscription): string {
+  return typeof subscription.customer === "string"
+    ? subscription.customer
+    : subscription.customer.id;
+}
+
+/** Read the current period end (billing date) — location varies by API version. */
+function periodEndOf(subscription: Stripe.Subscription): Date | null {
+  const sub = subscription as unknown as { current_period_end?: number };
+  const item = subscription.items.data[0] as unknown as { current_period_end?: number } | undefined;
+  const unix = sub.current_period_end ?? item?.current_period_end ?? null;
+  return unix ? new Date(unix * 1000) : null;
+}
+
+/**
+ * Mirror a Stripe subscription onto the user: plan + billing metadata
+ * (status, subscription id, start date, next billing date, cancel flag).
+ */
+async function syncSubscription(subscription: Stripe.Subscription): Promise<void> {
+  const customerId = customerIdOf(subscription);
   const result = await prisma.user.updateMany({
     where: { stripeCustomerId: customerId },
-    data: { plan },
+    data: {
+      plan: planForSubscription(subscription),
+      stripeSubscriptionId: subscription.id,
+      subscriptionStatus: subscription.status,
+      subscribedAt: subscription.start_date
+        ? new Date(subscription.start_date * 1000)
+        : undefined,
+      currentPeriodEnd: periodEndOf(subscription),
+      cancelAtPeriodEnd: subscription.cancel_at_period_end ?? false,
+    },
   });
   if (result.count === 0) {
-    console.warn(
-      `[webhook] No user found for Stripe customer ${customerId}; plan '${plan}' not applied.`,
-    );
+    console.warn(`[webhook] No user found for Stripe customer ${customerId}.`);
   }
-  return result.count;
 }
 
 export async function POST(req: Request) {
@@ -102,21 +126,22 @@ export async function POST(req: Request) {
         // Handles upgrades, downgrades, renewals, trial→active, and
         // lapses into past_due/unpaid (which drop the user to SEEDLING).
         const subscription = event.data.object as Stripe.Subscription;
-        const customerId =
-          typeof subscription.customer === "string"
-            ? subscription.customer
-            : subscription.customer.id;
-        await setPlanByCustomer(customerId, planForSubscription(subscription));
+        await syncSubscription(subscription);
         break;
       }
 
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
-        const customerId =
-          typeof subscription.customer === "string"
-            ? subscription.customer
-            : subscription.customer.id;
-        await setPlanByCustomer(customerId, "SEEDLING");
+        const customerId = customerIdOf(subscription);
+        await prisma.user.updateMany({
+          where: { stripeCustomerId: customerId },
+          data: {
+            plan: "SEEDLING",
+            subscriptionStatus: subscription.status, // "canceled"
+            cancelAtPeriodEnd: false,
+            currentPeriodEnd: null,
+          },
+        });
         break;
       }
 

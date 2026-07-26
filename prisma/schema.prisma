@@ -15,6 +15,17 @@ model User {
 
   plan             Plan           @default(SEEDLING)
 
+  // ─── Subscription (mirrored from Stripe via webhooks) ───────────────────────
+  stripeSubscriptionId  String?   @unique
+  subscriptionStatus    String?   // active, trialing, past_due, canceled, ...
+  subscribedAt          DateTime? // when the current subscription started
+  currentPeriodEnd      DateTime? // next billing / renewal date
+  cancelAtPeriodEnd     Boolean   @default(false)
+  lastBillingReminderAt DateTime? // dedup for pre-billing reminder emails
+
+  // ─── Account status ─────────────────────────────────────────────────────────
+  disabledAt            DateTime? // set when the account is deactivated (self or admin)
+
   settings         Settings?
   focusSessions    FocusSession[]
   projects         Project[]
