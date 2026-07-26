@@ -17,6 +17,7 @@ import {
   ChevronDown,
   CheckCircle2,
   Menu,
+  ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -25,6 +26,7 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { useTimers } from "@/contexts/TimersContext";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,6 +64,7 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
   const { user, signOut } = useAuth();
   const { workspaces, activeWorkspace, setActiveWorkspace } = useWorkspace();
   const { pomodoro, countdown } = useTimers();
+  const isAdmin = useIsAdmin();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const runningTimers = [
@@ -258,6 +261,14 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
                   <span>Billing</span>
                 </DropdownMenuItem>
               </Link>
+              {isAdmin && (
+                <Link href="/admin">
+                  <DropdownMenuItem className="cursor-pointer">
+                    <ShieldCheck className="mr-2 h-4 w-4" />
+                    <span>Admin dashboard</span>
+                  </DropdownMenuItem>
+                </Link>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => signOut()}
