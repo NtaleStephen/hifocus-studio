@@ -148,11 +148,9 @@ export function UpgradeProvider({ children }: { children: ReactNode }) {
       {children}
 
       <Dialog open={open} onOpenChange={setOpen}>
-        {/* Fixed "liquid glass" surface — identical across all themes, always legible. */}
-        <DialogContent className="max-w-2xl overflow-hidden rounded-2xl border border-white/15 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.14),rgba(12,12,16,0.55)_38%,rgba(12,12,16,0.7))] text-white shadow-[0_24px_70px_-15px_rgba(0,0,0,0.75)] backdrop-blur-2xl sm:rounded-2xl [&>button]:text-white/70 [&>button:hover]:text-white">
-          {/* specular highlight */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-white/15 to-transparent" />
-
+        {/* Fixed "liquid glass" surface — identical across all themes, always legible.
+            Matches the Settings panel exactly (no extra specular overlay). */}
+        <DialogContent className="max-w-2xl rounded-2xl border border-white/15 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.14),rgba(12,12,16,0.6)_38%,rgba(12,12,16,0.72))] text-white shadow-[0_24px_70px_-15px_rgba(0,0,0,0.75)] backdrop-blur-2xl sm:rounded-2xl [&>button]:text-white/70 [&>button:hover]:text-white">
           <DialogHeader className="relative">
             <div className="mx-auto mb-2 flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-white shadow-inner sm:mx-0">
               <Lock className="h-5 w-5" />

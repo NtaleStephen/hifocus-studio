@@ -50,6 +50,11 @@ interface NavBarProps {
   onFullscreen: () => void;
 }
 
+// Fixed liquid-glass surface for dropdown menus — matches the modal / settings
+// panel and stays legible across every theme.
+const GLASS_MENU =
+  "w-56 rounded-xl border border-white/15 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.1),rgba(12,12,16,0.74)_40%,rgba(12,12,16,0.82))] text-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)] backdrop-blur-2xl [&_[role=menuitem]:focus]:bg-white/10 [&_[role=menuitem]:focus]:text-white [&_[role=separator]]:bg-white/15";
+
 function formatRemaining(totalSeconds: number): string {
   const s = Math.max(0, totalSeconds);
   const h = Math.floor(s / 3600);
@@ -149,8 +154,8 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
                   <ChevronDown className="h-3 w-3 shrink-0" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 rounded-xl border-border bg-card/95 backdrop-blur-md">
-                <DropdownMenuLabel className="font-mono text-xs font-medium text-muted-foreground">
+              <DropdownMenuContent align="end" className={GLASS_MENU}>
+                <DropdownMenuLabel className="font-mono text-xs font-medium text-white/50">
                   Switch Workspace
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
@@ -186,7 +191,7 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
 
                 <DropdownMenuSeparator />
                 <Link href="/app/workspace">
-                  <DropdownMenuItem className="cursor-pointer text-xs text-muted-foreground">
+                  <DropdownMenuItem className="cursor-pointer text-xs text-white/60">
                     Manage workspaces…
                   </DropdownMenuItem>
                 </Link>
@@ -236,14 +241,14 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
                 <User className="h-4 w-4" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 rounded-xl border-border bg-card/95 backdrop-blur-md">
-              <DropdownMenuLabel className="font-mono text-xs font-medium text-muted-foreground">
+            <DropdownMenuContent align="end" className={GLASS_MENU}>
+              <DropdownMenuLabel className="font-mono text-xs font-medium text-white/50">
                 Account
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <div className="px-2 py-1.5 text-sm font-medium truncate">{user.email}</div>
               {activeWorkspace && (
-                <div className="px-2 py-1 text-xs text-muted-foreground flex items-center gap-1">
+                <div className="px-2 py-1 text-xs text-white/60 flex items-center gap-1">
                   <Building2 className="h-3 w-3" />
                   {activeWorkspace.name}
                 </div>
@@ -272,7 +277,7 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => signOut()}
-                className="text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer"
+                className="cursor-pointer text-red-400 focus:!bg-red-500/15 focus:!text-red-400"
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Log out</span>
