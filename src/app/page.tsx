@@ -63,7 +63,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background text-foreground relative selection:bg-primary/20 overflow-hidden" ref={containerRef}>
       
       {/* Navigation */}
-      <nav className="fixed top-0 inset-x-0 z-50 p-6 flex items-center justify-between backdrop-blur-md bg-background/50 border-b border-border/50 transition-all">
+      <nav className="fixed top-0 inset-x-0 z-50 px-4 py-4 sm:p-6 flex items-center justify-between backdrop-blur-md bg-background/50 border-b border-border/50 transition-all">
         <div className="flex items-center gap-3">
           <Image src="/logo.png" alt="Hifocus Logo" width={32} height={32} className="rounded" />
           <span className="font-mono font-bold text-xl tracking-tighter">HIFOCUS</span>
@@ -84,8 +84,10 @@ export default function LandingPage() {
             </button>
           )}
           <Link href="/app">
-            <Button className="rounded-full px-6 font-semibold transition-all">
-              Enter Workspace <ArrowRight className="h-4 w-4 ml-2" />
+            <Button className="rounded-full px-4 sm:px-6 font-semibold transition-all">
+              <span className="hidden sm:inline">Enter Workspace</span>
+              <span className="sm:hidden">Enter</span>
+              <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </Link>
         </div>
@@ -134,7 +136,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="flex items-center gap-6 mt-12 bg-card/50 p-6 sm:p-8 rounded-[2.5rem] border border-border/50 shadow-2xl backdrop-blur-sm"
+            className="flex max-w-full items-center gap-2 sm:gap-4 md:gap-6 mt-10 sm:mt-12 bg-card/50 p-4 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] border border-border/50 shadow-2xl backdrop-blur-sm"
           >
             {mounted && time ? (
               <>
@@ -199,8 +201,8 @@ export default function LandingPage() {
         </div>
 
         {/* Scrolling Content over the clock */}
-        <div className="relative z-10 py-32">
-          <div className="max-w-7xl mx-auto px-4 space-y-48 md:space-y-64">
+        <div className="relative z-10 py-20 sm:py-32">
+          <div className="max-w-7xl mx-auto px-4 space-y-28 md:space-y-64">
             
             {/* Feature 1 */}
             <motion.div 
@@ -268,11 +270,11 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials */}
-      <section id="testimonials" className="py-32 px-4 bg-muted/30 border-t border-border/50 relative">
+      <section id="testimonials" className="py-20 sm:py-32 px-4 bg-muted/30 border-t border-border/50 relative">
         <div className="max-w-6xl mx-auto space-y-16">
           <div className="text-center max-w-2xl mx-auto space-y-4">
-            <h2 className="text-5xl font-bold font-mono tracking-tighter">Loved by creators.</h2>
-            <p className="text-xl text-muted-foreground">See how professionals are taking back their time using Hifocus.</p>
+            <h2 className="text-3xl sm:text-5xl font-bold font-mono tracking-tighter">Loved by creators.</h2>
+            <p className="text-lg sm:text-xl text-muted-foreground">See how professionals are taking back their time using Hifocus.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -315,12 +317,12 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-32 px-4 relative">
+      <section id="pricing" className="py-20 sm:py-32 px-4 relative">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 blur-[150px] rounded-full pointer-events-none" />
         <div className="max-w-6xl mx-auto space-y-16 relative z-10">
           <div className="text-center max-w-2xl mx-auto space-y-4">
-            <h2 className="text-5xl font-bold font-mono tracking-tighter">Simple Pricing.</h2>
-            <p className="text-xl text-muted-foreground">Pick the plan that fits your work style. No hidden fees.</p>
+            <h2 className="text-3xl sm:text-5xl font-bold font-mono tracking-tighter">Simple Pricing.</h2>
+            <p className="text-lg sm:text-xl text-muted-foreground">Pick the plan that fits your work style. No hidden fees.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -423,16 +425,16 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Layer */}
-      <section className="py-24 px-4 relative">
-        <div className="max-w-5xl mx-auto rounded-[3rem] bg-background/40 backdrop-blur-3xl border border-white/10 dark:border-white/5 text-foreground text-center p-12 sm:p-24 relative overflow-hidden shadow-2xl">
+      <section className="py-16 sm:py-24 px-4 relative">
+        <div className="max-w-5xl mx-auto rounded-[2rem] sm:rounded-[3rem] bg-background/40 backdrop-blur-3xl border border-white/10 dark:border-white/5 text-foreground text-center p-8 sm:p-24 relative overflow-hidden shadow-2xl">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent pointer-events-none" />
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
           <div className="relative z-10 space-y-8">
-            <h2 className="text-5xl sm:text-7xl font-bold font-mono tracking-tighter">Your time is yours again.</h2>
-            <p className="text-xl sm:text-2xl font-light opacity-90 text-muted-foreground">Jump right into the workspace. No installations required.</p>
+            <h2 className="text-4xl sm:text-7xl font-bold font-mono tracking-tighter">Your time is yours again.</h2>
+            <p className="text-lg sm:text-2xl font-light opacity-90 text-muted-foreground">Jump right into the workspace. No installations required.</p>
             <div className="pt-8">
               <Link href="/app">
-                <Button size="lg" className="h-16 px-12 rounded-full text-lg font-bold hover:scale-105 transition-transform shadow-2xl">
+                <Button size="lg" className="h-14 sm:h-16 px-8 sm:px-12 rounded-full text-base sm:text-lg font-bold hover:scale-105 transition-transform shadow-2xl">
                   Enter Workspace <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
               </Link>
@@ -448,7 +450,7 @@ export default function LandingPage() {
             <Image src="/logo.png" alt="Hifocus Logo" width={24} height={24} className="rounded" />
             <span className="font-mono font-bold tracking-tighter">HIFOCUS</span>
           </div>
-          <div className="flex gap-6 text-sm text-muted-foreground font-medium">
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground font-medium">
             <Link href="/about" className="hover:text-foreground transition-colors">About</Link>
             <Link href="#" className="hover:text-foreground transition-colors">Privacy</Link>
             <Link href="#" className="hover:text-foreground transition-colors">Terms</Link>
