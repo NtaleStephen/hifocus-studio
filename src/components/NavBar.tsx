@@ -24,6 +24,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
+import { useTimers } from "@/contexts/TimersContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,11 +48,30 @@ interface NavBarProps {
   onFullscreen: () => void;
 }
 
+function formatRemaining(totalSeconds: number): string {
+  const s = Math.max(0, totalSeconds);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return h > 0 ? `${h}:${pad(m)}:${pad(sec)}` : `${m}:${pad(sec)}`;
+}
+
 const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
   const pathname = usePathname();
   const { user, signOut } = useAuth();
   const { workspaces, activeWorkspace, setActiveWorkspace } = useWorkspace();
+  const { pomodoro, countdown } = useTimers();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const runningTimers = [
+    pomodoro.status === "running"
+      ? { key: "pomodoro", label: "Pomodoro", href: "/app/pomodoro", icon: Brain, seconds: pomodoro.remainingSeconds }
+      : null,
+    countdown.status === "running"
+      ? { key: "countdown", label: "Countdown", href: "/app/countdown", icon: Timer, seconds: countdown.remainingSeconds }
+      : null,
+  ].filter((t): t is NonNullable<typeof t> => t !== null);
 
   const links = [
     { path: "/app", icon: Clock, label: "Clock" },
@@ -74,6 +94,23 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
         <Link href="/" className="flex items-center hover:opacity-80 transition-opacity mr-2">
           <Image src="/logo.png" alt="Hifocus Logo" width={24} height={24} className="rounded shadow-sm" />
         </Link>
+
+        {/* ── Running timer indicator(s) ──────────────────────────── */}
+        {runningTimers.map((t) => (
+          <Link
+            key={t.key}
+            href={t.href}
+            title={`${t.label} running — ${formatRemaining(t.seconds)} left`}
+            className="mr-1 flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+            </span>
+            <t.icon className="h-3.5 w-3.5" />
+            <span className="hidden font-mono tabular-nums sm:inline">{formatRemaining(t.seconds)}</span>
+          </Link>
+        ))}
 
         {/* ── Desktop nav links (md+) ─────────────────────────────── */}
         <div className="hidden md:flex items-center gap-1">
