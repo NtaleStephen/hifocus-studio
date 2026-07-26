@@ -1,110 +1,27 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState } from "react";
 import NavBar from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
 import SettingsPanel from "@/components/SettingsPanel";
-import { useSettings } from "@/contexts/SettingsContext";
 import FlipCard from "@/components/FlipCard";
 import { Play, Pause, RotateCcw, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
-import { useTaskSelection } from "@/contexts/TaskContext";
-import { useWorkspace } from "@/contexts/WorkspaceContext";
+import { useTimers } from "@/contexts/TimersContext";
 import { useFullscreen } from "@/hooks/useFullscreen";
 
-const CountdownContent = ({
-  initialTime,
-}: {
-  initialTime?: { hours: number; minutes: number; seconds: number };
-}) => {
-  const { user, session } = useAuth();
-  const { settings } = useSettings();
-  const { selection } = useTaskSelection();
-  const { activeWorkspace } = useWorkspace();
-  const [totalSeconds, setTotalSeconds] = useState(0);
-  const [remaining, setRemaining] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
-  const [isComplete, setIsComplete] = useState(false);
-  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+const CountdownContent = () => {
+  const { countdown, setDuration, start, pause, reset } = useTimers();
 
-  useEffect(() => {
-    if (initialTime) {
-      const total = initialTime.hours * 3600 + initialTime.minutes * 60 + initialTime.seconds;
-      setTotalSeconds(total);
-      setRemaining(total);
-    }
-  }, [initialTime]);
-
-  const persistSession = useCallback(
-    async (elapsedSeconds: number) => {
-      if (!user || !session) return;
-      const minutes = Math.max(1, Math.round(elapsedSeconds / 60));
-      try {
-        await fetch("/api/sessions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
-            durationMinutes: minutes,
-            type: "countdown",
-            projectId: selection.projectId,
-            taskId: selection.taskId,
-            workspaceId: activeWorkspace?.id ?? null,
-          }),
-        });
-      } catch (error) {
-        console.error("Failed to persist countdown session", error);
-      }
-    },
-    [user, session, selection.projectId, selection.taskId, activeWorkspace],
-  );
-
-  useEffect(() => {
-    if (isRunning && remaining > 0) {
-      intervalRef.current = setInterval(() => {
-        setRemaining((prev) => {
-          if (prev <= 1) {
-            setIsRunning(false);
-            setIsComplete(true);
-            void persistSession(totalSeconds);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else {
-      clearInterval(intervalRef.current);
-    }
-    return () => clearInterval(intervalRef.current);
-  }, [isRunning, remaining, totalSeconds, persistSession]);
+  const remaining = countdown.remainingSeconds;
+  const isRunning = countdown.status === "running";
 
   const h = Math.floor(remaining / 3600).toString().padStart(2, "0");
   const m = Math.floor((remaining % 3600) / 60).toString().padStart(2, "0");
   const s = (remaining % 60).toString().padStart(2, "0");
 
-  const handleStart = () => {
-    if (remaining > 0) setIsRunning(true);
-  };
-
-  const handlePause = () => setIsRunning(false);
-
-  const handleReset = () => {
-    setIsRunning(false);
-    setRemaining(totalSeconds);
-    setIsComplete(false);
-  };
-
   const adjustDuration = (deltaSeconds: number) => {
-    setTotalSeconds((prev) => {
-      const next = Math.max(0, prev + deltaSeconds);
-      if (!isRunning) {
-        setRemaining(next);
-      }
-      return next;
-    });
+    setDuration("countdown", Math.max(0, countdown.durationSeconds + deltaSeconds));
   };
 
   return (
@@ -151,15 +68,15 @@ const CountdownContent = ({
 
         <div className="flex gap-4">
           {!isRunning ? (
-            <Button onClick={handleStart} size="lg" className="h-14 w-14 rounded-full p-0">
+            <Button onClick={() => start("countdown")} size="lg" className="h-14 w-14 rounded-full p-0">
               <Play className="h-6 w-6 fill-current" />
             </Button>
           ) : (
-            <Button onClick={handlePause} size="lg" variant="outline" className="h-14 w-14 rounded-full p-0">
+            <Button onClick={() => pause("countdown")} size="lg" variant="outline" className="h-14 w-14 rounded-full p-0">
               <Pause className="h-6 w-6" />
             </Button>
           )}
-          <Button onClick={handleReset} size="lg" variant="ghost" className="h-14 w-14 rounded-full p-0">
+          <Button onClick={() => reset("countdown")} size="lg" variant="ghost" className="h-14 w-14 rounded-full p-0">
             <RotateCcw className="h-6 w-6" />
           </Button>
         </div>

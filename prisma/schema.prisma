@@ -95,6 +95,7 @@ model FocusSession {
   taskId      String?
   duration    Int      // Duration in minutes
   type        String   @default("pomodoro") // Can be pomodoro, countdown
+  startedAt   DateTime? // When the timer was first started (null for legacy rows)
   completedAt DateTime @default(now())
 
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)

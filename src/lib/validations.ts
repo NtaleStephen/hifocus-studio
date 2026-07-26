@@ -60,6 +60,8 @@ export const createSessionSchema = z.object({
   projectId: z.string().uuid().optional().nullable(),
   taskId: z.string().uuid().optional().nullable(),
   workspaceId: z.string().uuid().optional().nullable(),
+  // ISO timestamp of when the timer was first started (optional).
+  startedAt: z.string().datetime().optional().nullable(),
 });
 
 // ─── Settings ───────────────────────────────────────────────────────────────

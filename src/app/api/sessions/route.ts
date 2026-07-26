@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { durationMinutes, type, projectId, taskId, workspaceId } = parsed.data;
+    const { durationMinutes, type, projectId, taskId, workspaceId, startedAt } = parsed.data;
 
     // Ensure the caller may reference each provided foreign key (prevents IDOR).
     if (workspaceId && !(await isWorkspaceMember(user.id, workspaceId))) {
@@ -46,6 +46,7 @@ export async function POST(req: Request) {
         projectId: projectId ?? null,
         taskId: taskId ?? null,
         workspaceId: workspaceId ?? null,
+        startedAt: startedAt ? new Date(startedAt) : null,
       },
     });
 

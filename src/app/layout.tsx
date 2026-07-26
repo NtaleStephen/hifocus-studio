@@ -8,6 +8,7 @@ import { SettingsProvider } from "@/contexts/SettingsContext";
 import { TaskProvider } from "@/contexts/TaskContext";
 import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
 import { UpgradeProvider } from "@/contexts/UpgradeContext";
+import { TimersProvider } from "@/contexts/TimersContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 const inter = Inter({
@@ -54,11 +55,13 @@ export default function RootLayout({
             <SettingsProvider>
               <TaskProvider>
                 <WorkspaceProvider>
-                  <UpgradeProvider>
-                    <ProtectedRoute>
-                      {children}
-                    </ProtectedRoute>
-                  </UpgradeProvider>
+                  <TimersProvider>
+                    <UpgradeProvider>
+                      <ProtectedRoute>
+                        {children}
+                      </ProtectedRoute>
+                    </UpgradeProvider>
+                  </TimersProvider>
                   <Toaster />
                 </WorkspaceProvider>
               </TaskProvider>
