@@ -35,7 +35,7 @@ export async function sendEmail({ to, subject, html }: SendEmailArgs): Promise<b
   }
 }
 
-/** Renewal reminder email HTML. */
+/** Renewal reminder email — table-based HTML for broad email-client support. */
 export function billingReminderEmail(opts: {
   planLabel: string;
   amount: string;
@@ -43,26 +43,84 @@ export function billingReminderEmail(opts: {
   manageUrl: string;
 }): { subject: string; html: string } {
   const { planLabel, amount, renewalDate, manageUrl } = opts;
+  const font =
+    "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+
+  const html = `
+<!doctype html>
+<html>
+  <body style="margin:0;padding:0;background:#0b0b0f;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0b0b0f;padding:32px 12px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.4);">
+            <!-- Header -->
+            <tr>
+              <td style="background:linear-gradient(135deg,#18181b,#0b0b0f);padding:24px 28px;">
+                <span style="font-family:${font};font-size:18px;font-weight:700;letter-spacing:1px;color:#fbbf24;">HIFOCUS</span>
+              </td>
+            </tr>
+            <!-- Body -->
+            <tr>
+              <td style="padding:32px 28px 8px;">
+                <p style="margin:0 0 6px;font-family:${font};font-size:13px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:#a1a1aa;">Upcoming renewal</p>
+                <h1 style="margin:0 0 16px;font-family:${font};font-size:22px;line-height:1.3;color:#18181b;">Your ${planLabel} plan renews soon</h1>
+                <p style="margin:0 0 24px;font-family:${font};font-size:15px;line-height:1.6;color:#52525b;">
+                  This is a friendly heads-up that your Hifocus subscription is about to renew. No action is needed to keep your focus streak going.
+                </p>
+              </td>
+            </tr>
+            <!-- Detail card -->
+            <tr>
+              <td style="padding:0 28px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;border-radius:12px;">
+                  <tr>
+                    <td style="padding:16px 20px;font-family:${font};font-size:14px;color:#71717a;">Plan</td>
+                    <td style="padding:16px 20px;font-family:${font};font-size:14px;font-weight:600;color:#18181b;text-align:right;">${planLabel}</td>
+                  </tr>
+                  <tr><td colspan="2" style="border-top:1px solid #e4e4e7;"></td></tr>
+                  <tr>
+                    <td style="padding:16px 20px;font-family:${font};font-size:14px;color:#71717a;">Amount</td>
+                    <td style="padding:16px 20px;font-family:${font};font-size:14px;font-weight:600;color:#18181b;text-align:right;">${amount}</td>
+                  </tr>
+                  <tr><td colspan="2" style="border-top:1px solid #e4e4e7;"></td></tr>
+                  <tr>
+                    <td style="padding:16px 20px;font-family:${font};font-size:14px;color:#71717a;">Renews on</td>
+                    <td style="padding:16px 20px;font-family:${font};font-size:14px;font-weight:700;color:#18181b;text-align:right;">${renewalDate}</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <!-- CTA -->
+            <tr>
+              <td style="padding:28px;">
+                <table role="presentation" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="border-radius:10px;background:#18181b;">
+                      <a href="${manageUrl}" style="display:inline-block;padding:12px 26px;font-family:${font};font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:10px;">Manage subscription</a>
+                    </td>
+                  </tr>
+                </table>
+                <p style="margin:18px 0 0;font-family:${font};font-size:13px;line-height:1.6;color:#a1a1aa;">
+                  Want to change or cancel your plan? You can do it any time from the button above.
+                </p>
+              </td>
+            </tr>
+            <!-- Footer -->
+            <tr>
+              <td style="padding:20px 28px;background:#fafafa;border-top:1px solid #eee;">
+                <p style="margin:0;font-family:${font};font-size:12px;color:#a1a1aa;">Hifocus — focus, tracked. You're receiving this because you have an active subscription.</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+
   return {
     subject: `Your Hifocus ${planLabel} plan renews on ${renewalDate}`,
-    html: `
-      <div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:480px;margin:0 auto;padding:24px;color:#111">
-        <h1 style="font-size:20px;margin:0 0 12px">Upcoming renewal</h1>
-        <p style="font-size:14px;line-height:1.6;color:#444">
-          Heads up — your <strong>Hifocus ${planLabel}</strong> subscription
-          (${amount}) renews on <strong>${renewalDate}</strong>.
-        </p>
-        <p style="font-size:14px;line-height:1.6;color:#444">
-          No action is needed to continue. To update your plan, payment method,
-          or cancel, manage your subscription below.
-        </p>
-        <p style="margin:24px 0">
-          <a href="${manageUrl}" style="background:#111;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-size:14px;display:inline-block">
-            Manage subscription
-          </a>
-        </p>
-        <p style="font-size:12px;color:#999">Hifocus — focus, tracked.</p>
-      </div>
-    `,
+    html,
   };
 }

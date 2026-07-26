@@ -6,13 +6,10 @@ import {
   useState,
   useCallback,
   type ReactNode,
-  type CSSProperties,
 } from "react";
 import { useRouter } from "next/navigation";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/contexts/AuthContext";
-import { useSettings } from "@/contexts/SettingsContext";
-import { getTheme } from "@/lib/themes";
 import { slugToStripeKey } from "@/lib/stripe-plans";
 import {
   canAccess,
@@ -92,7 +89,6 @@ const TIERS: {
 export function UpgradeProvider({ children }: { children: ReactNode }) {
   const { plan, loading } = useSubscription();
   const { session } = useAuth();
-  const { settings } = useSettings();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [feature, setFeature] = useState<FeatureKey | null>(null);
@@ -115,10 +111,6 @@ export function UpgradeProvider({ children }: { children: ReactNode }) {
 
   const requiredPlan: Plan = feature ? minPlanFor(feature) : "flow";
   const featureLabel = feature ? FEATURE_LABELS[feature] ?? "This feature" : null;
-
-  // Apply the active theme's CSS variables so the portaled modal matches the
-  // rest of the app (the Radix portal renders outside the theme wrapper).
-  const themeStyle = getTheme(settings.theme).vars as CSSProperties;
 
   const startCheckout = async (slug: Plan) => {
     const key = slugToStripeKey(slug);
@@ -156,63 +148,70 @@ export function UpgradeProvider({ children }: { children: ReactNode }) {
       {children}
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent style={themeStyle} className="max-w-2xl bg-background text-foreground">
-          <DialogHeader>
-            <div className="mx-auto mb-2 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary sm:mx-0">
+        {/* Fixed "liquid glass" surface — identical across all themes, always legible. */}
+        <DialogContent className="max-w-2xl overflow-hidden rounded-2xl border border-white/15 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.14),rgba(12,12,16,0.55)_38%,rgba(12,12,16,0.7))] text-white shadow-[0_24px_70px_-15px_rgba(0,0,0,0.75)] backdrop-blur-2xl sm:rounded-2xl [&>button]:text-white/70 [&>button:hover]:text-white">
+          {/* specular highlight */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-white/15 to-transparent" />
+
+          <DialogHeader className="relative">
+            <div className="mx-auto mb-2 flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-white shadow-inner sm:mx-0">
               <Lock className="h-5 w-5" />
             </div>
-            <DialogTitle className="text-center sm:text-left">
+            <DialogTitle className="text-center text-white sm:text-left">
               {featureLabel
                 ? `${featureLabel} is a ${PLAN_LABELS[requiredPlan]} feature`
                 : "Upgrade your plan"}
             </DialogTitle>
-            <DialogDescription className="text-center sm:text-left">
+            <DialogDescription className="text-center text-white/60 sm:text-left">
               {featureLabel
                 ? `You're on the ${PLAN_LABELS[plan]} plan. Upgrade to ${PLAN_LABELS[requiredPlan]} or higher to unlock it.`
                 : "Pick a plan to unlock more of Hifocus."}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="relative grid gap-3 sm:grid-cols-3">
             {TIERS.map((tier) => {
               const isRecommended = tier.slug === requiredPlan;
               const alreadyHave = planAtLeast(plan, tier.slug);
               return (
                 <div
                   key={tier.slug}
-                  className={`relative flex flex-col rounded-xl border p-4 ${
+                  className={`relative flex flex-col rounded-2xl border p-4 backdrop-blur-md transition-colors ${
                     isRecommended
-                      ? "border-primary ring-1 ring-primary bg-primary/[0.03]"
-                      : "border-border"
+                      ? "border-amber-300/50 bg-white/[0.14] ring-1 ring-amber-300/30"
+                      : "border-white/10 bg-white/[0.05] hover:bg-white/[0.08]"
                   }`}
                 >
                   {isRecommended && (
-                    <span className="absolute -top-2 left-4 rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground">
+                    <span className="absolute -top-2 left-4 rounded-full bg-amber-400 px-2 py-0.5 text-[10px] font-semibold text-neutral-950 shadow">
                       Unlocks this
                     </span>
                   )}
                   <div className="mb-2 flex items-center gap-2">
-                    <span className="rounded-lg bg-primary/10 p-1.5 text-primary">
+                    <span className="rounded-lg border border-white/15 bg-white/10 p-1.5 text-white">
                       <tier.icon className="h-4 w-4" />
                     </span>
-                    <h3 className="text-sm font-bold">{tier.name}</h3>
+                    <h3 className="text-sm font-bold text-white">{tier.name}</h3>
                   </div>
                   <div className="mb-3">
-                    <span className="text-2xl font-bold">{tier.price}</span>
-                    <span className="text-xs text-muted-foreground">{tier.cadence}</span>
+                    <span className="text-2xl font-bold text-white">{tier.price}</span>
+                    <span className="text-xs text-white/50">{tier.cadence}</span>
                   </div>
                   <ul className="mb-4 flex-1 space-y-1.5">
                     {tier.highlights.map((h) => (
-                      <li key={h} className="flex items-start gap-1.5 text-xs text-muted-foreground">
-                        <Check className="mt-0.5 h-3 w-3 shrink-0 text-primary" />
+                      <li key={h} className="flex items-start gap-1.5 text-xs text-white/70">
+                        <Check className="mt-0.5 h-3 w-3 shrink-0 text-amber-300" />
                         <span>{h}</span>
                       </li>
                     ))}
                   </ul>
                   <Button
                     size="sm"
-                    variant={isRecommended ? "default" : "outline"}
-                    className="w-full rounded-lg"
+                    className={`w-full rounded-xl ${
+                      isRecommended
+                        ? "bg-amber-400 text-neutral-950 hover:bg-amber-300"
+                        : "border border-white/20 bg-white/10 text-white hover:bg-white/20"
+                    }`}
                     disabled={alreadyHave || checkingOut !== null}
                     onClick={() => startCheckout(tier.slug)}
                   >
@@ -227,19 +226,19 @@ export function UpgradeProvider({ children }: { children: ReactNode }) {
             })}
           </div>
 
-          <div className="flex flex-col items-center gap-1">
+          <div className="relative flex flex-col items-center gap-1">
             <button
               onClick={() => {
                 setOpen(false);
                 router.push("/app/billing");
               }}
-              className="text-xs font-medium text-primary transition-colors hover:underline"
+              className="text-xs font-medium text-amber-300 transition-colors hover:underline"
             >
               See full plan comparison
             </button>
             <button
               onClick={() => setOpen(false)}
-              className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+              className="text-xs text-white/50 transition-colors hover:text-white/80"
             >
               Maybe later
             </button>
