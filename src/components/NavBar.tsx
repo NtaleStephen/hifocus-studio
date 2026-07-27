@@ -303,9 +303,12 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
               <Menu className="h-5 w-5" />
             </button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-72 overflow-y-auto">
+          <SheetContent
+            side="right"
+            className="w-72 overflow-y-auto border-white/15 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.1),rgba(12,12,16,0.82)_30%,rgba(12,12,16,0.9))] text-white backdrop-blur-2xl [&>button]:text-white/70 [&>button:hover]:text-white"
+          >
             <SheetHeader>
-              <SheetTitle className="flex items-center gap-2 font-mono tracking-wider">
+              <SheetTitle className="flex items-center gap-2 font-mono tracking-wider text-white">
                 <Image src="/logo.png" alt="Hifocus Logo" width={24} height={24} className="rounded" />
                 HIFOCUS
               </SheetTitle>
@@ -320,8 +323,8 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
                   onClick={() => setMobileOpen(false)}
                   className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
                     pathname === path
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/10"
+                      ? "bg-amber-400 text-neutral-950"
+                      : "text-white/70 hover:bg-white/10 hover:text-white"
                   }`}
                 >
                   <Icon className="h-4 w-4" />
@@ -331,19 +334,19 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
             </div>
 
             {/* Workspace section */}
-            <div className="mt-6 border-t border-border pt-4">
-              <p className="px-3 pb-2 font-mono text-xs font-medium text-muted-foreground">Workspace</p>
+            <div className="mt-6 border-t border-white/10 pt-4">
+              <p className="px-3 pb-2 font-mono text-xs font-medium text-white/50">Workspace</p>
               <button
                 onClick={() => {
                   setActiveWorkspace(null);
                   toast.info("Switched to personal workspace");
                   setMobileOpen(false);
                 }}
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground hover:bg-muted/10"
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
               >
                 <User className="h-4 w-4" />
                 <span className="flex-1 text-left">Personal</span>
-                {!activeWorkspace && <CheckCircle2 className="h-3.5 w-3.5 text-primary" />}
+                {!activeWorkspace && <CheckCircle2 className="h-3.5 w-3.5 text-amber-300" />}
               </button>
               {workspaces.map((ws) => (
                 <button
@@ -353,17 +356,17 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
                     toast.success(`Switched to "${ws.name}"`);
                     setMobileOpen(false);
                   }}
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground hover:bg-muted/10"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
                 >
                   <Building2 className="h-4 w-4" />
                   <span className="flex-1 truncate text-left">{ws.name}</span>
-                  {activeWorkspace?.id === ws.id && <CheckCircle2 className="h-3.5 w-3.5 text-primary" />}
+                  {activeWorkspace?.id === ws.id && <CheckCircle2 className="h-3.5 w-3.5 text-amber-300" />}
                 </button>
               ))}
               <Link
                 href="/app/workspace"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground hover:bg-muted/10"
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
               >
                 <Building2 className="h-4 w-4" />
                 <span className="font-medium">Manage workspaces</span>
@@ -371,14 +374,14 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
             </div>
 
             {/* Account section */}
-            <div className="mt-6 border-t border-border pt-4">
+            <div className="mt-6 border-t border-white/10 pt-4">
               {user ? (
                 <>
-                  <p className="px-3 pb-1 text-sm font-medium truncate">{user.email}</p>
+                  <p className="truncate px-3 pb-1 text-sm font-medium text-white">{user.email}</p>
                   <Link
                     href="/app/billing"
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground hover:bg-muted/10"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
                   >
                     <CreditCard className="h-4 w-4" />
                     <span className="font-medium">Billing</span>
@@ -388,7 +391,7 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
                       signOut();
                       setMobileOpen(false);
                     }}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-destructive transition-colors hover:bg-destructive/10"
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-red-400 transition-colors hover:bg-red-500/15"
                   >
                     <LogOut className="h-4 w-4" />
                     <span className="font-medium">Log out</span>
@@ -398,7 +401,7 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
                 <Link
                   href="/auth"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-primary transition-colors hover:bg-primary/10"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-amber-300 transition-colors hover:bg-white/10"
                 >
                   <User className="h-4 w-4" />
                   <span className="font-semibold">Sign In</span>
