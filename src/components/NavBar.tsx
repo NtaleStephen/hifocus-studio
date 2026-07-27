@@ -126,14 +126,15 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
             <Link
               key={path}
               href={path}
-              className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm transition-all duration-200 ${
+              title={label}
+              className={`flex items-center gap-2 rounded-full px-3 py-2 text-sm transition-all duration-200 xl:px-4 ${
                 pathname === path
                   ? "bg-primary text-primary-foreground shadow-md"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/10"
               }`}
             >
               <Icon className="h-4 w-4" />
-              <span className="font-medium">{label}</span>
+              <span className="hidden font-medium xl:inline">{label}</span>
             </Link>
           ))}
 
@@ -148,7 +149,7 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
                   title="Workspace"
                 >
                   <Building2 className="h-4 w-4 shrink-0" />
-                  <span className="hidden lg:inline text-xs font-medium max-w-[100px] truncate">
+                  <span className="hidden xl:inline text-xs font-medium max-w-[100px] truncate">
                     {activeWorkspace ? activeWorkspace.name : "Personal"}
                   </span>
                   <ChevronDown className="h-3 w-3 shrink-0" />
@@ -210,7 +211,7 @@ const NavBar = ({ onSettingsClick, onFullscreen }: NavBarProps) => {
               }`}
             >
               <Building2 className="h-4 w-4" />
-              <span className="font-medium">Workspace</span>
+              <span className="hidden font-medium xl:inline">Workspace</span>
             </Link>
           )}
         </div>

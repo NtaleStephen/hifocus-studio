@@ -452,7 +452,7 @@ export default function WorkspacePage() {
                       {ws.memberCount} member{ws.memberCount !== 1 ? "s" : ""} · <RoleBadge role={ws.role} />
                     </p>
                   </div>
-                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-2 opacity-100 transition-opacity xl:opacity-0 xl:group-hover:opacity-100">
                     {activeWorkspace?.id !== ws.id && (
                       <Button
                         variant="outline"

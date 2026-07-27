@@ -259,7 +259,7 @@ export default function TasksPage() {
                     type="button"
                     aria-label={`Delete project ${project.name}`}
                     onClick={() => deleteProject(project)}
-                    className="ml-2 shrink-0 rounded p-1 text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100"
+                    className="ml-2 shrink-0 rounded p-1 text-muted-foreground opacity-100 transition-opacity hover:text-destructive xl:opacity-0 xl:group-hover:opacity-100"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -338,7 +338,7 @@ export default function TasksPage() {
                     type="button"
                     aria-label={`Delete task ${task.name}`}
                     onClick={() => deleteTask(task)}
-                    className="shrink-0 rounded p-1 text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100"
+                    className="shrink-0 rounded p-1 text-muted-foreground opacity-100 transition-opacity hover:text-destructive xl:opacity-0 xl:group-hover:opacity-100"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
